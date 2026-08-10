@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0a0a0c">
+    <meta name="description" content="SHREDDED - Seu planejador inteligente de dieta e treino personalizado. Calcule seus macros, monte sua rotina de treinos e acompanhe seu progresso.">
     <title>SHREDDED - Planejador de Dieta e Treino</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,11 +19,76 @@
 </head>
 <body>
 
+    <!-- VALIDATION TOAST (GLOBAL) -->
+    <div id="validation-toast" class="validation-toast hidden">
+        <i data-lucide="alert-triangle" style="width:20px;height:20px;flex-shrink:0;color:var(--danger);"></i>
+        <span id="validation-toast-msg" style="font-size:0.85rem;color:var(--text-primary);"></span>
+    </div>
+
     <!-- CONTAINER PRINCIPAL -->
     <div id="app-container">
 
+        <!-- TELA 0: LOGIN / REGISTRO -->
+        <div id="login-screen" class="screen active">
+            <div class="brand-header">
+                <span class="logo-text">SHREDDED</span>
+                <span class="logo-dot">.</span>
+            </div>
+            <p style="text-align:center;color:var(--text-secondary);margin-bottom:32px;font-size:0.95rem;">
+                Seu plano de treino e dieta personalizado
+            </p>
+
+            <!-- Tabs Login / Registro -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">Entrar</button>
+                <button class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">Criar Conta</button>
+            </div>
+
+            <!-- Formulário de Login -->
+            <div id="auth-login-form" class="auth-form" style="width:100%;">
+                <div class="form-group">
+                    <label for="login-email">EMAIL</label>
+                    <input type="email" id="login-email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">SENHA</label>
+                    <input type="password" id="login-password" placeholder="Sua senha" required autocomplete="current-password">
+                </div>
+                <button type="button" id="btn-login" class="btn btn-accent btn-block" onclick="handleLogin()">
+                    <i data-lucide="log-in"></i> Entrar
+                </button>
+                <div class="auth-divider">ou</div>
+                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
+                    <i data-lucide="zap"></i> Continuar sem conta
+                </button>
+            </div>
+
+            <!-- Formulário de Registro -->
+            <div id="auth-register-form" class="auth-form" style="width:100%;display:none;">
+                <div class="form-group">
+                    <label for="register-name">NOME</label>
+                    <input type="text" id="register-name" placeholder="Seu nome" required autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label for="register-email">EMAIL</label>
+                    <input type="email" id="register-email" placeholder="seu@email.com" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">SENHA</label>
+                    <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required autocomplete="new-password" minlength="6">
+                </div>
+                <button type="button" id="btn-register" class="btn btn-accent btn-block" onclick="handleRegister()">
+                    <i data-lucide="user-plus"></i> Criar Conta
+                </button>
+                <div class="auth-divider">ou</div>
+                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
+                    <i data-lucide="zap"></i> Continuar sem conta
+                </button>
+            </div>
+        </div>
+
         <!-- TELA 1: ONBOARDING / WIZARD (FORMULÁRIO MULTI-ETAPAS) -->
-        <div id="onboarding-screen" class="screen active">
+        <div id="onboarding-screen" class="screen">
             <div class="brand-header">
                 <span class="logo-text">SHREDDED</span>
                 <span class="logo-dot">.</span>
@@ -42,12 +108,13 @@
                         
                         <div class="form-group">
                             <label for="input-name">NOME / APELIDO</label>
-                            <input type="text" id="input-name" placeholder="Ex: Lucas" required autocomplete="off">
+                            <input type="text" id="input-name" placeholder="Ex: Lucas" required autocomplete="off" minlength="2" maxlength="50">
                         </div>
 
                         <div class="form-group">
                             <label for="input-age">IDADE</label>
-                            <input type="number" id="input-age" placeholder="Ex: 26" min="12" max="100" required>
+                            <input type="number" id="input-age" placeholder="Ex: 26" min="14" max="80" required>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 14 e 80 anos</small>
                         </div>
 
                         <div class="form-group">
@@ -86,11 +153,13 @@
                         <div class="form-group">
                             <label for="input-weight">PESO ATUAL (KG)</label>
                             <input type="number" id="input-weight" step="0.1" placeholder="Ex: 78.5" min="30" max="250" required>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 30 kg e 250 kg</small>
                         </div>
 
                         <div class="form-group">
                             <label for="input-height">ALTURA (CM)</label>
                             <input type="number" id="input-height" placeholder="Ex: 178" min="100" max="230" required>
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 100 cm e 230 cm</small>
                         </div>
 
                         <div class="wizard-nav">
@@ -227,7 +296,7 @@
             </div>
         </div>
 
-        <!-- TELA 2: DASHBOARD E CONTEÚDO PRINCIPAL (DENTRO DA ESTRUTURA DO APLICATIVO) -->
+        <!-- TELA 2: DASHBOARD E CONTEÚDO PRINCIPAL -->
         <div id="main-screen" class="screen">
             
             <!-- HEADER DO APP -->
@@ -246,6 +315,30 @@
 
                 <!-- ABA 1: DASHBOARD -->
                 <section id="tab-dashboard" class="tab-content active">
+
+                    <!-- Card de IMC -->
+                    <div class="bmi-card" id="bmi-card-container">
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                            <div>
+                                <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">IMC (Índice de Massa Corporal)</span>
+                                <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">
+                                    <span class="bmi-value" id="dash-bmi-value">0</span>
+                                    <span class="bmi-class-badge" id="dash-bmi-badge" data-status="normal">Normal</span>
+                                </div>
+                            </div>
+                            <i data-lucide="scale" style="width:28px;height:28px;color:var(--accent);"></i>
+                        </div>
+                        <div class="bmi-bar-container">
+                            <div class="bmi-indicator" id="bmi-indicator" style="left:50%;"></div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.65rem;color:var(--text-muted);">
+                            <span>Abaixo</span>
+                            <span>Normal</span>
+                            <span>Sobrepeso</span>
+                            <span>Obeso</span>
+                        </div>
+                    </div>
+
                     <!-- Cards de Calorias Diárias -->
                     <div class="calorie-ring-container card">
                         <div class="calorie-progress-wrapper">
@@ -291,6 +384,29 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- Card de Estimativa de Progresso -->
+                    <div class="progress-card card" id="progress-card-container">
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+                            <i data-lucide="target" style="width:24px;height:24px;color:var(--accent);"></i>
+                            <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.05rem;">Estimativa de Progresso</h3>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Por Semana</span>
+                                <span class="stat-value" id="progress-weekly" style="font-size:0.9rem;">-</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Por Mês</span>
+                                <span class="stat-value" id="progress-monthly" style="font-size:0.9rem;">-</span>
+                            </div>
+                            <div class="stat-item" style="grid-column:1/-1;">
+                                <span class="stat-label">Tempo Estimado</span>
+                                <span class="stat-value" id="progress-timeline" style="font-size:0.9rem;">-</span>
+                            </div>
+                        </div>
+                        <p id="progress-disclaimer" style="font-size:0.7rem;color:var(--text-muted);margin-top:10px;font-style:italic;"></p>
                     </div>
 
                     <!-- Grid de Widgets: Água e Checklist -->
@@ -355,6 +471,15 @@
                                 </li>
                             </ul>
                         </div>
+
+                        <!-- Dicas do Dia -->
+                        <div class="tips-card" id="tips-container">
+                            <div style="display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border-color);">
+                                <i data-lucide="lightbulb" style="width:20px;height:20px;color:var(--accent);"></i>
+                                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;">💡 Dicas para Você</h3>
+                            </div>
+                            <!-- Tips are rendered dynamically by JS -->
+                        </div>
                     </div>
                 </section>
 
@@ -404,6 +529,25 @@
                         </div>
                     </div>
 
+                    <!-- Informações Educativas sobre Macros -->
+                    <div class="info-section">
+                        <div class="info-card">
+                            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;" onclick="this.parentElement.classList.toggle('expanded')">
+                                <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent);"></i>
+                                <span style="font-family:var(--font-heading);font-weight:700;font-size:0.9rem;">📚 Entenda seus Macronutrientes</span>
+                                <i data-lucide="chevron-down" style="width:16px;height:16px;margin-left:auto;color:var(--text-muted);"></i>
+                            </div>
+                            <div class="exercise-collapse">
+                                <div style="padding:0 16px 16px 16px;font-size:0.8rem;color:var(--text-secondary);line-height:1.6;">
+                                    <p><strong style="color:var(--color-protein);">🥩 Proteínas (4 kcal/g):</strong> Essenciais para reparação e crescimento muscular. Consuma distribuídas ao longo do dia.</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--color-carbs);">🍚 Carboidratos (4 kcal/g):</strong> Principal fonte de energia para treinos intensos. Priorize fontes complexas (arroz integral, batata doce, aveia).</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--color-fats);">🥑 Gorduras (9 kcal/g):</strong> Fundamentais para produção hormonal (testosterona). Fontes: azeite, abacate, castanhas, peixes.</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--accent);">💧 Água:</strong> Beba pelo menos 35ml por kg de peso corporal. A hidratação impacta diretamente na performance e recuperação.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Lista de Refeições -->
                     <div class="meals-list" id="meals-container">
                         <!-- Gerado dinamicamente via JS -->
@@ -418,6 +562,7 @@
                         </div>
                         <h2 id="profile-user-name">Lucas</h2>
                         <p class="profile-meta" id="profile-user-goal">Foco: Ganho de Massa Muscular</p>
+                        <p class="profile-meta" id="profile-user-email" style="font-size:0.8rem;color:var(--text-muted);"></p>
                     </div>
 
                     <!-- Dados Fisiológicos Calculados -->
@@ -440,15 +585,35 @@
                                 <span class="stat-label">Gasto Diário (TDEE)</span>
                                 <span class="stat-value" id="prof-tdee">2600 kcal</span>
                             </div>
+                            <div class="stat-item">
+                                <span class="stat-label">IMC</span>
+                                <span class="stat-value" id="prof-bmi">24.6</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Classificação</span>
+                                <span class="stat-value" id="prof-bmi-class">Normal</span>
+                            </div>
                         </div>
+                    </div>
+
+                    <!-- Suplementação Sugerida -->
+                    <div class="card" id="supplements-card">
+                        <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;margin-bottom:16px;">💊 Suplementação Sugerida</h3>
+                        <div class="supplements-section" id="supplements-container">
+                            <!-- Gerado dinamicamente via JS -->
+                        </div>
+                        <p style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">⚠️ Consulte um nutricionista antes de iniciar qualquer suplementação.</p>
                     </div>
 
                     <!-- Configurações e Reinício -->
                     <div class="profile-actions card">
                         <h3>Ações da Conta</h3>
                         <p class="settings-desc">Se você mudou de peso ou quer alterar o seu objetivo, clique abaixo para gerar um novo plano.</p>
-                        <button id="btn-reset-plan" class="btn btn-danger btn-block">
+                        <button id="btn-reset-plan" class="btn btn-danger btn-block" style="margin-bottom:10px;">
                             <i data-lucide="refresh-cw"></i> Redefinir Dados e Plano
+                        </button>
+                        <button id="btn-logout" class="btn-logout" onclick="handleLogout()" style="display:none;">
+                            <i data-lucide="log-out" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;"></i> Sair da Conta
                         </button>
                     </div>
                 </section>
@@ -475,6 +640,17 @@
                 </button>
             </nav>
 
+        </div>
+
+        <!-- REST TIMER OVERLAY -->
+        <div id="rest-timer-overlay" class="rest-timer-overlay" style="display:none;">
+            <div class="rest-timer-circle">
+                <span class="rest-timer-text" id="rest-timer-display">60</span>
+            </div>
+            <p style="color:var(--text-secondary);margin-bottom:20px;font-family:var(--font-heading);font-weight:700;">Descanso entre séries</p>
+            <button class="btn btn-accent" onclick="stopRestTimer()" style="min-width:180px;">
+                <i data-lucide="x"></i> Pular Descanso
+            </button>
         </div>
 
     </div>

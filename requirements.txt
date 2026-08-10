@@ -1,1 +1,3 @@
 Flask==3.0.3
+# === Para ativar login com Supabase, descomente abaixo: ===
+# supabase==2.3.0

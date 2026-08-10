@@ -1422,3 +1422,295 @@ body {
 .nav-item.active i {
     transform: translateY(-2px);
 }
+
+/* ========================================================
+   VALIDATION TOAST / ERROR NOTIFICATIONS
+   ======================================================== */
+.validation-toast {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    z-index: 200;
+    background: rgba(255, 71, 87, 0.15);
+    border: 1px solid var(--danger);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform var(--transition-fast), opacity var(--transition-fast);
+    opacity: 1;
+    max-width: calc(100% - 32px);
+    width: max-content;
+    animation: shake 0.5s;
+}
+
+.validation-toast.hidden {
+    transform: translateX(-50%) translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.validation-toast.success {
+    background: rgba(57, 227, 111, 0.15);
+    border: 1px solid var(--success);
+}
+
+.form-group input.input-error {
+    border-color: var(--danger);
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.2);
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* ========================================================
+   BMI CARD & DASHBOARD WIDGETS
+   ======================================================== */
+.bmi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.bmi-value {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.bmi-class-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 12px;
+}
+
+.bmi-class-badge[data-status="normal"] { background: rgba(57, 227, 111, 0.2); color: var(--success); }
+.bmi-class-badge[data-status="overweight"] { background: rgba(255, 165, 2, 0.2); color: #ffa502; }
+.bmi-class-badge[data-status="obese"] { background: rgba(255, 71, 87, 0.2); color: var(--danger); }
+
+.bmi-bar-container {
+    height: 8px;
+    background: linear-gradient(to right, #39e36f, #ffa502, #ff4757);
+    border-radius: 4px;
+    margin-top: 16px;
+    position: relative;
+}
+
+.bmi-indicator {
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+
+/* ========================================================
+   TIPS & INFO CARDS
+   ======================================================== */
+.tips-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border-left: 4px solid var(--accent);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tip-item:last-child {
+    border-bottom: none;
+}
+
+.tip-item i {
+    color: var(--accent);
+    margin-top: 4px;
+}
+
+.info-section {
+    margin-bottom: 24px;
+}
+
+.info-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+/* ========================================================
+   SUPPLEMENTS
+   ======================================================== */
+.supplements-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.supplement-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.priority-badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.priority-badge.essential { background: rgba(57, 227, 111, 0.2); color: var(--success); }
+.priority-badge.recommended { background: rgba(255, 165, 2, 0.2); color: #ffa502; }
+.priority-badge.optional { background: rgba(94, 96, 107, 0.2); color: var(--text-muted); }
+
+/* ========================================================
+   PROGRESS ESTIMATION
+   ======================================================== */
+.progress-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+}
+
+/* ========================================================
+   REST TIMER
+   ======================================================== */
+.rest-timer-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(10, 10, 12, 0.9);
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.rest-timer-circle {
+    width: 150px;
+    height: 150px;
+    border: 4px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.rest-timer-text {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+/* ========================================================
+   LOGIN & AUTH SCREEN
+   ======================================================== */
+#login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.auth-tab {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding-bottom: 8px;
+    cursor: pointer;
+}
+
+.auth-tab.active {
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent);
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 24px 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    width: 100%;
+}
+.auth-divider::before, .auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+.auth-divider::before { margin-right: 12px; }
+.auth-divider::after { margin-left: 12px; }
+
+.auth-link {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: center;
+    display: block;
+    margin-top: 16px;
+}
+
+/* ========================================================
+   LOGOUT BUTTON
+   ======================================================== */
+.btn-logout {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    width: 100%;
+}
+
+.btn-logout:hover {
+    background: rgba(255, 71, 87, 0.1);
+    color: var(--danger);
+    border-color: rgba(255, 71, 87, 0.3);
+}

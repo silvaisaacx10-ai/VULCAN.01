@@ -1,10 +1,105 @@
 import os
+import hashlib
+import uuid
 from flask import Flask, render_template, request, jsonify
+
+# === SUPABASE CONFIG (Descomentar quando tiver as credenciais) ===
+# from supabase import create_client
+# SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
+# SUPABASE_KEY = os.environ.get('SUPABASE_KEY', '')
+# supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL else None
 
 app = Flask(__name__)
 
 # Configurações do App
 app.config['SECRET_KEY'] = 'gym-aesthetic-secret-key-12345'
+
+# Simple in-memory user storage (replace with Supabase in production)
+users_db = {}
+saved_plans = {}
+
+@app.route('/api/auth/register', methods=['POST'])
+def register():
+    # Registers a new user
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    email = data.get('email')
+    password = data.get('password')
+    name = data.get('name')
+    
+    if not email or not password or not name:
+        return jsonify({'error': 'Faltam dados'}), 400
+    if email in users_db:
+        return jsonify({'error': 'Usuário já existe'}), 400
+    
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    users_db[email] = {
+        'name': name,
+        'password_hash': password_hash,
+        'token': None
+    }
+    return jsonify({'message': 'Usuário registrado com sucesso'}), 201
+
+@app.route('/api/auth/login', methods=['POST'])
+def login():
+    # Logs in user, returns token
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    email = data.get('email')
+    password = data.get('password')
+    
+    if not email or not password:
+        return jsonify({'error': 'Faltam dados'}), 400
+    
+    user = users_db.get(email)
+    if not user:
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+    
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    if user['password_hash'] != password_hash:
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+    
+    token = str(uuid.uuid4())
+    user['token'] = token
+    return jsonify({'token': token, 'name': user['name']}), 200
+
+@app.route('/api/user/save-plan', methods=['POST'])
+def save_plan():
+    # Saves user's generated plan
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    email = data.get('email')
+    plan = data.get('plan')
+    
+    if not email or not plan:
+        return jsonify({'error': 'Faltam dados'}), 400
+    
+    saved_plans[email] = plan
+    return jsonify({'message': 'Plano salvo com sucesso'}), 200
+
+@app.route('/api/user/load-plan', methods=['POST'])
+def load_plan():
+    # Loads user's saved plan
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    email = data.get('email')
+    if not email:
+        return jsonify({'error': 'Faltam dados'}), 400
+    
+    plan = saved_plans.get(email)
+    if not plan:
+        return jsonify({'error': 'Nenhum plano encontrado'}), 404
+        
+    return jsonify({'plan': plan}), 200
+
 
 # Banco de dados de Alimentos Base para dimensionamento dinâmico
 FOOD_TEMPLATES = {
@@ -146,6 +241,45 @@ EXERCISES_DATABASE = {
 }
 
 
+def validate_user_data(data):
+    name = data.get('name', '')
+    if isinstance(name, str):
+        name = name.strip()
+    if not name or not isinstance(name, str) or len(name) < 2 or len(name) > 50:
+        return {'error': True, 'field': 'name', 'message': '⚠️ O nome deve ter entre 2 e 50 caracteres e não estar vazio.'}
+    
+    try:
+        age = int(data.get('age', 0))
+        if age < 14 or age > 80:
+            return {'error': True, 'field': 'age', 'message': '⚠️ A idade deve estar entre 14 e 80 anos.'}
+    except (TypeError, ValueError):
+        return {'error': True, 'field': 'age', 'message': '⚠️ Idade inválida.'}
+        
+    try:
+        weight = float(data.get('weight', 0))
+        if weight < 30 or weight > 250:
+            return {'error': True, 'field': 'weight', 'message': f'⚠️ O peso informado ({weight} kg) não é humanamente possível. Por favor, insira seu peso real entre 30 kg e 250 kg.'}
+    except (TypeError, ValueError):
+        return {'error': True, 'field': 'weight', 'message': '⚠️ Peso inválido.'}
+
+    try:
+        height = float(data.get('height', 0))
+        if height < 100 or height > 230:
+            return {'error': True, 'field': 'height', 'message': f'⚠️ A altura informada ({height} cm) não é humanamente possível. Por favor, insira sua altura real entre 100 cm e 230 cm.'}
+    except (TypeError, ValueError):
+        return {'error': True, 'field': 'height', 'message': '⚠️ Altura inválida.'}
+        
+    height_m = height / 100
+    bmi = weight / (height_m ** 2)
+    
+    if bmi < 12:
+        return {'error': True, 'field': 'bmi', 'message': f'⚠️ Com altura {height} cm e peso {weight} kg, o IMC seria {bmi:.1f}, o que é biologicamente impossível. Verifique seus dados.'}
+    elif bmi > 60:
+        return {'error': True, 'field': 'bmi', 'message': f'⚠️ Com altura {height} cm e peso {weight} kg, o IMC seria {bmi:.1f}, o que é biologicamente impossível. Verifique seus dados.'}
+        
+    return None
+
+
 def calculate_nutrition(gender, weight, height, age, activity_level, goal):
     """
     Calcula o gasto energético e divide os macronutrientes do usuário.
@@ -205,13 +339,32 @@ def calculate_nutrition(gender, weight, height, age, activity_level, goal):
         fat_kcal = remaining * 0.35
         fat_g = fat_kcal / 9
 
+    # BMI
+    height_m = height / 100
+    bmi = round(weight / (height_m ** 2), 1)
+    
+    if bmi < 18.5:
+        bmi_class = 'Abaixo do Peso'
+    elif 18.5 <= bmi < 25:
+        bmi_class = 'Peso Normal'
+    elif 25 <= bmi < 30:
+        bmi_class = 'Sobrepeso'
+    elif 30 <= bmi < 35:
+        bmi_class = 'Obesidade Grau I'
+    elif 35 <= bmi < 40:
+        bmi_class = 'Obesidade Grau II'
+    else:
+        bmi_class = 'Obesidade Grau III'
+
     return {
         'bmr': round(bmr),
         'tdee': round(tdee),
         'target_calories': round(target_calories),
         'protein': round(protein_g),
         'carbs': round(carb_g),
-        'fats': round(fat_g)
+        'fats': round(fat_g),
+        'bmi': bmi,
+        'bmi_class': bmi_class
     }
 
 
@@ -560,6 +713,78 @@ def generate_workout(goal):
     return weekly_plan
 
 
+def get_tips(goal):
+    if goal == 'lose':
+        return [
+            "Mantenha-se em déficit calórico consistente; é a única forma de perder gordura.",
+            "Priorize o consumo de proteínas para preservar a massa magra durante o emagrecimento.",
+            "Faça cardio preferencialmente após o treino de musculação ou em horário alternativo.",
+            "Durma de 7 a 8 horas por noite para regular os hormônios do apetite.",
+            "Beba bastante água para auxiliar no metabolismo e evitar a retenção de líquidos."
+        ]
+    elif goal == 'gain':
+        return [
+            "Mantenha-se em superávit calórico leve para construir músculos sem acumular muita gordura.",
+            "Consuma proteínas de forma bem distribuída ao longo do dia.",
+            "Foque em progressão de carga (aumentar peso ou repetições) nos treinos.",
+            "Priorize exercícios compostos (agachamento, supino, terra) que ativam múltiplos grupos musculares.",
+            "Descanse! O músculo cresce durante o período de recuperação, não durante o treino."
+        ]
+    else:
+        return [
+            "A consistência é o segredo para manter os resultados a longo prazo.",
+            "Equilibre seus macronutrientes para garantir energia e recuperação.",
+            "Varie suas fontes de alimentos para garantir um bom aporte de micronutrientes.",
+            "Faça recuperação ativa (caminhada, alongamento) nos dias de descanso.",
+            "Permita-se algumas refeições livres com moderação para manter a saúde mental."
+        ]
+
+def get_supplements(goal):
+    supplements = [
+        {'name': 'Creatina Monohidratada', 'dose': '3-5g/dia', 'when': 'Qualquer horário, diariamente', 'why': 'Aumenta força e volume muscular', 'priority': 'Essencial'},
+        {'name': 'Whey Protein', 'dose': '20-40g/dia', 'when': 'Pós-treino ou lanches', 'why': 'Facilita bater a meta de proteínas', 'priority': 'Recomendado'}
+    ]
+    if goal == 'lose':
+        supplements.extend([
+            {'name': 'Cafeína / Pré-treino', 'dose': '150-300mg', 'when': '30 min antes do treino', 'why': 'Aumenta energia e levemente o metabolismo', 'priority': 'Opcional'},
+            {'name': 'Ômega 3', 'dose': '1-2g/dia', 'when': 'Junto com as refeições', 'why': 'Ação anti-inflamatória e saúde cardiovascular', 'priority': 'Recomendado'}
+        ])
+    elif goal == 'gain':
+        supplements.extend([
+            {'name': 'Hipercalórico', 'dose': '1-2 porções', 'when': 'Lanches ou junto com refeições', 'why': 'Ajuda a alcançar o superávit calórico', 'priority': 'Opcional'},
+            {'name': 'Multivitamínico', 'dose': '1 cápsula/dia', 'when': 'Após uma refeição principal', 'why': 'Cobre possíveis déficits de micronutrientes', 'priority': 'Opcional'}
+        ])
+    else:
+        supplements.extend([
+            {'name': 'Multivitamínico', 'dose': '1 cápsula/dia', 'when': 'Após uma refeição principal', 'why': 'Garante o aporte de vitaminas', 'priority': 'Recomendado'},
+            {'name': 'Ômega 3', 'dose': '1-2g/dia', 'when': 'Junto com as refeições', 'why': 'Saúde geral e controle de inflamação', 'priority': 'Recomendado'}
+        ])
+    return supplements
+
+def estimate_progress(goal, weight, gender):
+    if goal == 'lose':
+        return {
+          'weekly_change': '0.5-0.8 kg de perda',
+          'monthly_change': '2.0-3.2 kg de perda',
+          'expected_timeline': '8-12 semanas para resultados visíveis',
+          'disclaimer': 'Estimativa baseada em um déficit calórico saudável. Resultados individuais podem variar.'
+        }
+    elif goal == 'gain':
+        return {
+          'weekly_change': '0.2-0.4 kg de ganho',
+          'monthly_change': '0.8-1.5 kg de ganho (músculo e peso geral)',
+          'expected_timeline': '12-16 semanas para resultados visíveis de hipertrofia',
+          'disclaimer': 'O ganho de massa magra é um processo lento. Focar em progressão de cargas é fundamental.'
+        }
+    else:
+        return {
+          'weekly_change': 'Manutenção de peso',
+          'monthly_change': 'Manutenção / Recomposição leve',
+          'expected_timeline': 'Resultados contínuos de estabilidade',
+          'disclaimer': 'Na manutenção, o foco deve ser a melhora na performance e na qualidade de vida.'
+        }
+
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -571,7 +796,11 @@ def handle_generate_plan():
         data = request.get_json()
         
         # Validar dados de entrada
-        name = data.get('name', 'Campeão')
+        validation_error = validate_user_data(data)
+        if validation_error:
+            return jsonify(validation_error), 422
+            
+        name = data.get('name', 'Campeão').strip()
         gender = data.get('gender', 'male')
         weight = float(data.get('weight', 70))
         height = float(data.get('height', 170))
@@ -580,7 +809,7 @@ def handle_generate_plan():
         goal = data.get('goal', 'maintain')
         diet_preference = data.get('diet_preference', 'standard')
         
-        # 1. Calcular Necessidades Energéticas e Macronutrientes
+        # 1. Calcular Necessidades Energéticas e Macronutrientes (inclui BMI)
         nutrition = calculate_nutrition(gender, weight, height, age, activity_level, goal)
         
         # 2. Gerar Plano de Refeições
@@ -589,7 +818,13 @@ def handle_generate_plan():
         # 3. Gerar Plano de Treino Semanal
         workout = generate_workout(goal)
         
-        # 4. Retornar resposta formatada
+        # 4. Gerar dados adicionais
+        tips = get_tips(goal)
+        supplements = get_supplements(goal)
+        progress = estimate_progress(goal, weight, gender)
+        water_target = round(weight * 35)
+        
+        # 5. Retornar resposta formatada
         response_data = {
             'user': {
                 'name': name,
@@ -600,7 +835,11 @@ def handle_generate_plan():
             },
             'nutrition': nutrition,
             'diet_plan': meals,
-            'workout_plan': workout
+            'workout_plan': workout,
+            'tips': tips,
+            'supplements': supplements,
+            'progress': progress,
+            'water_target': water_target
         }
         
         return jsonify(response_data), 200
