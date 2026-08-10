@@ -76,11 +76,21 @@ def save_plan():
         
     email = data.get('email')
     plan = data.get('plan')
+    progress_history = data.get('progressHistory')
+    streak = data.get('streak')
     
-    if not email or not plan:
+    if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    saved_plans[email] = plan
+    if email not in saved_plans:
+        saved_plans[email] = {}
+    if plan:
+        saved_plans[email]['plan'] = plan
+    if progress_history is not None:
+        saved_plans[email]['progressHistory'] = progress_history
+    if streak is not None:
+        saved_plans[email]['streak'] = streak
+        
     return jsonify({'message': 'Plano salvo com sucesso'}), 200
 
 @app.route('/api/user/load-plan', methods=['POST'])
@@ -94,11 +104,40 @@ def load_plan():
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    plan = saved_plans.get(email)
-    if not plan:
+    user_data = saved_plans.get(email)
+    if not user_data:
         return jsonify({'error': 'Nenhum plano encontrado'}), 404
         
-    return jsonify({'plan': plan}), 200
+    # Handle backwards compatibility for previously saved plans
+    if not isinstance(user_data, dict) or ('plan' not in user_data and 'progressHistory' not in user_data and 'streak' not in user_data):
+        return jsonify({'plan': user_data}), 200
+        
+    return jsonify(user_data), 200
+
+@app.route('/admin')
+def admin_page():
+    return render_template('admin.html')
+
+@app.route('/api/admin/users', methods=['POST'])
+def admin_users():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    email = data.get('email')
+    password = data.get('password')
+    
+    if email != 'silvaisaacx10@gmail.com' or password != 'vidanova':
+        return jsonify({'error': 'Não autorizado'}), 401
+        
+    users_list = []
+    for u_email, u_data in users_db.items():
+        users_list.append({
+            'email': u_email,
+            'name': u_data.get('name', '')
+        })
+        
+    return jsonify({'users': users_list}), 200
 
 
 # Banco de dados de Alimentos Base para dimensionamento dinâmico

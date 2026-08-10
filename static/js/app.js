@@ -671,7 +671,9 @@ function renderTips() {
         div.innerHTML = `<i data-lucide="lightbulb"></i><span>${tipText}</span>`;
         container.appendChild(div);
     });
+    // Re-iniciar UI e icones
     lucide.createIcons();
+    setupPhase2Features();
 }
 
 function renderSupplements() {
@@ -817,6 +819,7 @@ function setupChecklistListeners() {
             appState.daily.checklist.sleep = chkSleep.checked;
             saveStateToStorage();
             if (chkSleep.checked) triggerConfetti();
+            checkAndIncrementStreak();
         };
     }
 
@@ -844,6 +847,7 @@ function addWater(amount) {
     if (oldWater < waterTarget && appState.daily.water >= waterTarget) {
         triggerConfetti();
         appState.daily.checklist.water = true;
+        checkAndIncrementStreak();
     }
 
     saveStateToStorage();
@@ -884,13 +888,16 @@ function renderDietTab() {
             </div>
             <div class="meal-card-body">
                 <ul class="meal-food-items">
-                    ${meal.items.map(item => `
+                    ${meal.items.map((item, itemIdx) => `
                         <li class="food-item">
                             <div>
                                 <div class="food-item-name">${item.name}</div>
                                 <span class="food-item-macros">P: ${item.prot}g | C: ${item.carb}g | G: ${item.fat}g</span>
                             </div>
-                            <div class="food-item-qty">${item.quantity} ${item.unit}</div>
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <div class="food-item-qty">${item.quantity} ${item.unit}</div>
+                                <button class="btn btn-icon" onclick="openSwapModal(${mealIdx}, ${itemIdx})" style="padding:4px;color:var(--text-muted);"><i data-lucide="repeat"></i></button>
+                            </div>
                         </li>
                     `).join('')}
                 </ul>
@@ -925,6 +932,8 @@ function renderDietTab() {
             // Efeito confete se todas refeições foram consumidas
             if (appState.daily.eatenMeals.length === appState.plan.diet_plan.length) {
                 triggerConfetti();
+                appState.daily.checklist.diet = true;
+                checkAndIncrementStreak();
             }
         });
     });
@@ -1177,4 +1186,257 @@ function triggerConfetti() {
             colors: ['#d2ff00', '#ffffff', '#20d3fe']
         });
     }
+}
+
+// ========================================================
+// PHASE 2 FEATURES (Premium)
+// ========================================================
+function setupPhase2Features() {
+    renderStreaks();
+    renderChart();
+    
+    // PDF Export
+    const btnPdf = document.getElementById('btn-export-pdf');
+    if(btnPdf) {
+        btnPdf.onclick = () => {
+            const el = document.getElementById('main-screen');
+            const opt = {
+                margin:       10,
+                filename:     'Plano_SHREDDED.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(el).save();
+        };
+    }
+    
+    // Grocery List
+    const btnGrocery = document.getElementById('btn-grocery-list');
+    if(btnGrocery) {
+        btnGrocery.onclick = openGroceryModal;
+    }
+    
+    // Measurements
+    const btnMeas = document.getElementById('btn-save-measurements');
+    if(btnMeas) {
+        btnMeas.onclick = saveMeasurements;
+    }
+    
+    // Close Modals on click outside
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.onclick = (e) => {
+            if(e.target === overlay) {
+                overlay.style.display = 'none';
+            }
+        };
+    });
+}
+
+function renderStreaks() {
+    const badge = document.querySelector('.streak-badge');
+    if(badge) {
+        const streak = appState.streak || 0;
+        badge.innerHTML = `Fogo 🔥 ${streak} dias`;
+    }
+}
+
+function checkAndIncrementStreak() {
+    const chk = appState.daily.checklist;
+    if(chk.diet && chk.workout && chk.water && chk.sleep) {
+        if(!appState.daily.streakIncremented) {
+            appState.streak = (appState.streak || 0) + 1;
+            appState.daily.streakIncremented = true;
+            saveStateToStorage();
+            renderStreaks();
+            triggerConfetti();
+            showToast('Parabéns! Você completou todas as missões do dia! 🔥', 'success');
+        }
+    }
+}
+
+function openGroceryModal() {
+    const modal = document.getElementById('grocery-modal');
+    const box = modal.querySelector('.modal-box');
+    
+    let groceryMap = {};
+    
+    appState.plan.diet_plan.forEach(meal => {
+        meal.items.forEach(item => {
+            if(!groceryMap[item.name]) {
+                groceryMap[item.name] = { qty: 0, unit: item.unit };
+            }
+            groceryMap[item.name].qty += item.quantity * 7;
+        });
+    });
+    
+    let html = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="font-family:var(--font-heading);">🛒 Lista de Compras (7 Dias)</h2>
+            <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
+        </div>
+        <div style="max-height:60vh;overflow-y:auto;padding-right:10px;">
+    `;
+    
+    for(let name in groceryMap) {
+        const data = groceryMap[name];
+        html += `
+            <div class="grocery-item">
+                <span style="font-weight:600;color:var(--text-primary);">${name}</span>
+                <span style="color:var(--accent);">${Math.round(data.qty)} ${data.unit}</span>
+            </div>
+        `;
+    }
+    
+    html += `</div>
+        <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="document.getElementById('grocery-modal').style.display='none'">Fechar</button>
+    `;
+    
+    box.innerHTML = html;
+    lucide.createIcons();
+    modal.style.display = 'flex';
+}
+
+function openSwapModal(mealIdx, itemIdx) {
+    const meal = appState.plan.diet_plan[mealIdx];
+    const item = meal.items[itemIdx];
+    
+    const modal = document.getElementById('swap-modal');
+    const box = modal.querySelector('.modal-box');
+    
+    let swaps = [];
+    if(item.carb > item.prot) {
+        swaps = [
+            { name: 'Batata Doce Cozida', mult: 1.5 },
+            { name: 'Arroz Branco', mult: 1.0 },
+            { name: 'Mandioca', mult: 1.2 }
+        ];
+    } else if(item.prot > item.fat) {
+        swaps = [
+            { name: 'Peito de Frango', mult: 1.0 },
+            { name: 'Patinho', mult: 1.0 },
+            { name: 'Tilápia', mult: 1.3 }
+        ];
+    } else {
+        swaps = [
+            { name: 'Abacate', mult: 1.5 },
+            { name: 'Azeite', mult: 0.2 },
+            { name: 'Pasta de Amendoim', mult: 0.3 }
+        ];
+    }
+    
+    let html = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="font-family:var(--font-heading);">🔁 Substituir Alimento</h2>
+            <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='none'"><i data-lucide="x"></i></button>
+        </div>
+        <p style="color:var(--text-secondary);margin-bottom:16px;">Trocando: <strong>${item.name}</strong></p>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+    `;
+    
+    swaps.forEach((swap, i) => {
+        if(swap.name !== item.name) {
+            html += `
+                <div class="grocery-item" style="cursor:pointer;" onclick="performSwap(${mealIdx}, ${itemIdx}, '${swap.name}', ${swap.mult})">
+                    <span>${swap.name}</span>
+                    <span style="color:var(--text-muted);font-size:0.8rem;">(Equivalente: ${Math.round(item.quantity * swap.mult)} ${item.unit})</span>
+                </div>
+            `;
+        }
+    });
+    
+    html += `</div>`;
+    box.innerHTML = html;
+    lucide.createIcons();
+    modal.style.display = 'flex';
+}
+
+function performSwap(mealIdx, itemIdx, newName, multiplier) {
+    const item = appState.plan.diet_plan[mealIdx].items[itemIdx];
+    item.name = newName;
+    item.quantity = Math.round(item.quantity * multiplier);
+    saveStateToStorage();
+    renderDietTab();
+    document.getElementById('swap-modal').style.display = 'none';
+    showToast('Alimento substituído com sucesso!', 'success');
+}
+
+function saveMeasurements() {
+    const weight = parseFloat(document.getElementById('meas-weight').value);
+    const arm = parseFloat(document.getElementById('meas-arm').value) || 0;
+    const leg = parseFloat(document.getElementById('meas-leg').value) || 0;
+    const hip = parseFloat(document.getElementById('meas-hip').value) || 0;
+    const waist = parseFloat(document.getElementById('meas-waist').value) || 0;
+    
+    if(isNaN(weight)) {
+        showToast('Peso é obrigatório!', 'error');
+        return;
+    }
+    
+    if(!appState.progressHistory) appState.progressHistory = [];
+    
+    appState.progressHistory.push({
+        date: getTodayDateString(),
+        weight, arm, leg, hip, waist
+    });
+    
+    appState.plan.user.weight = weight;
+    
+    saveStateToStorage();
+    showToast('Medidas salvas com sucesso!', 'success');
+    
+    renderApp();
+    renderChart();
+    
+    if(authState.isLoggedIn && authState.email) {
+        fetch('/api/user/save-plan', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                email: authState.email, 
+                plan: appState.plan,
+                progressHistory: appState.progressHistory,
+                streak: appState.streak
+            })
+        });
+    }
+}
+
+let weightChartInstance = null;
+function renderChart() {
+    const ctx = document.getElementById('weight-chart');
+    if(!ctx) return;
+    
+    const history = appState.progressHistory || [];
+    if(history.length === 0) return;
+    
+    const labels = history.map(h => h.date.substring(5)); // MM-DD
+    const data = history.map(h => h.weight);
+    
+    if(weightChartInstance) {
+        weightChartInstance.destroy();
+    }
+    
+    weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Peso (kg)',
+                data: data,
+                borderColor: '#d2ff00',
+                backgroundColor: 'rgba(210, 255, 0, 0.1)',
+                tension: 0.3,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { color: '#242431' }, ticks: { color: '#9ea0ab' } },
+                x: { grid: { display: false }, ticks: { color: '#9ea0ab' } }
+            }
+        }
+    });
 }

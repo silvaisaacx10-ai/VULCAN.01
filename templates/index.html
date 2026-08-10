@@ -14,6 +14,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <!-- CSS Link -->
     <link rel="stylesheet" href="/static/css/styles.css">
 </head>
@@ -307,6 +309,7 @@
                 </div>
                 <div class="header-logo">
                     <span>SHREDDED</span>
+                    <div class="streak-badge">Fogo 🔥 0 dias</div>
                 </div>
             </header>
 
@@ -521,6 +524,7 @@
                 <section id="tab-diet" class="tab-content">
                     <div class="diet-header">
                         <h2>Cardápio Personalizado</h2>
+                        <button id="btn-export-pdf" class="btn btn-secondary btn-icon"><i data-lucide="download"></i> Baixar PDF</button>
                         <div class="diet-summary-pills">
                             <span class="pill"><i data-lucide="flame"></i> <span id="diet-pill-cal">2400</span> kcal</span>
                             <span class="pill"><i data-lucide="beef"></i> P: <span id="diet-pill-prot">150</span>g</span>
@@ -530,6 +534,7 @@
                     </div>
 
                     <!-- Informações Educativas sobre Macros -->
+                    <button id="btn-grocery-list" class="btn btn-primary btn-block" style="margin-bottom: 16px;"><i data-lucide="shopping-cart"></i> Gerar Lista de Compras</button>
                     <div class="info-section">
                         <div class="info-card">
                             <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;" onclick="this.parentElement.classList.toggle('expanded')">
@@ -605,6 +610,20 @@
                         <p style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">⚠️ Consulte um nutricionista antes de iniciar qualquer suplementação.</p>
                     </div>
 
+                    <!-- Diário de Medidas & Peso -->
+                    <div class="card">
+                        <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;margin-bottom:16px;">Diário de Medidas & Peso</h3>
+                        <canvas id="weight-chart" width="400" height="200"></canvas>
+                        <div class="measurement-grid" style="margin-top: 16px;">
+                            <div class="form-group"><label>Peso Atual</label><input type="number" id="meas-weight" required></div>
+                            <div class="form-group"><label>Braço</label><input type="number" id="meas-arm"></div>
+                            <div class="form-group"><label>Perna</label><input type="number" id="meas-leg"></div>
+                            <div class="form-group"><label>Quadril</label><input type="number" id="meas-hip"></div>
+                            <div class="form-group"><label>Cintura</label><input type="number" id="meas-waist"></div>
+                        </div>
+                        <button class="btn btn-accent btn-block" id="btn-save-measurements" style="margin-top: 16px;">Salvar Medidas da Semana</button>
+                    </div>
+
                     <!-- Configurações e Reinício -->
                     <div class="profile-actions card">
                         <h3>Ações da Conta</h3>
@@ -653,6 +672,14 @@
             </button>
         </div>
 
+    </div>
+
+    <!-- MODALS -->
+    <div id="grocery-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box"></div>
+    </div>
+    <div id="swap-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box"></div>
     </div>
 
     <!-- JS Link -->

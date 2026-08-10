@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - VULCAN.01</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #0f0f0f;
+            color: #fff;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 2rem;
+            background: #1a1a1a;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+            border: 1px solid #0ff;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #333;
+            background: #2a2a2a;
+            color: #fff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0ff;
+            box-shadow: 0 0 5px #0ff;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #0ff;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s, box-shadow 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        button:hover {
+            background: #fff;
+            box-shadow: 0 0 10px #0ff;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .error-message {
+            color: #ff3333;
+            text-align: center;
+            margin-top: 1rem;
+            text-shadow: 0 0 5px #ff3333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+        th {
+            color: #0ff;
+        }
+        tbody tr:hover {
+            background: #2a2a2a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="login-screen">
+        <h1><i data-lucide="shield-check"></i> Acesso Restrito</h1>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Senha</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit"><i data-lucide="log-in"></i> Entrar</button>
+            <div id="login-error" class="error-message hidden">Credenciais inválidas ou erro no servidor.</div>
+        </form>
+    </div>
+
+    <div class="container hidden" id="dashboard-screen">
+        <h2><i data-lucide="layout-dashboard"></i> Painel de Controle</h2>
+        <button id="logout-btn" style="margin-bottom: 1rem; background: #333; color: #fff;"><i data-lucide="log-out"></i> Sair</button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
+                <!-- Users will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            errorElement.classList.add('hidden');
+            
+            try {
+                const response = await fetch('/api/admin/users', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const users = await response.json();
+                    showDashboard(users);
+                } else {
+                    errorElement.classList.remove('hidden');
+                }
+            } catch (error) {
+                console.error('Error logging in:', error);
+                errorElement.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('login-form').reset();
+            document.getElementById('users-table-body').innerHTML = '';
+        });
+
+        function showDashboard(users) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            // Handle both flat array and object with data array just in case
+            const userList = Array.isArray(users) ? users : (users.data || []);
+            
+            userList.forEach(user => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${user.name || user.nome || 'N/A'}</td>
+                    <td>${user.email || 'N/A'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
+</body>
+</html>
