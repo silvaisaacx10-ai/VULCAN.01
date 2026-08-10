@@ -1195,19 +1195,30 @@ function setupPhase2Features() {
     renderStreaks();
     renderChart();
     
-    // PDF Export
     const btnPdf = document.getElementById('btn-export-pdf');
     if(btnPdf) {
         btnPdf.onclick = () => {
-            const el = document.getElementById('main-screen');
+            const el = document.getElementById('tab-diet');
+            
+            // Temporary styles to fix blank PDF issue
+            const originalMaxHeight = el.style.maxHeight;
+            const originalOverflow = el.style.overflow;
+            el.style.maxHeight = 'none';
+            el.style.overflow = 'visible';
+            
             const opt = {
                 margin:       10,
-                filename:     'Plano_SHREDDED.pdf',
+                filename:     'Rotina_Alimentacao.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
+                html2canvas:  { scale: 2, useCORS: true, logging: true, backgroundColor: '#0f0f0f' },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            html2pdf().set(opt).from(el).save();
+            
+            html2pdf().set(opt).from(el).save().then(() => {
+                // Restore styles
+                el.style.maxHeight = originalMaxHeight;
+                el.style.overflow = originalOverflow;
+            });
         };
     }
     
@@ -1273,7 +1284,10 @@ function openGroceryModal() {
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h2 style="font-family:var(--font-heading);">🛒 Lista de Compras (7 Dias)</h2>
-            <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-secondary btn-icon" id="btn-pdf-grocery"><i data-lucide="download"></i> PDF</button>
+                <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
+            </div>
         </div>
         <div style="max-height:60vh;overflow-y:auto;padding-right:10px;">
     `;
@@ -1295,6 +1309,23 @@ function openGroceryModal() {
     box.innerHTML = html;
     lucide.createIcons();
     modal.style.display = 'flex';
+    
+    document.getElementById('btn-pdf-grocery').onclick = () => {
+        const opt = {
+            margin:       10,
+            filename:     'Lista_Mercado_SHREDDED.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#1a1a1a' },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        // Remove the action buttons momentarily before saving
+        const actionRow = box.querySelector('div[style*="display:flex;gap:10px;"]');
+        if(actionRow) actionRow.style.display = 'none';
+        
+        html2pdf().set(opt).from(box).save().then(() => {
+            if(actionRow) actionRow.style.display = 'flex';
+        });
+    };
 }
 
 function openSwapModal(mealIdx, itemIdx) {
