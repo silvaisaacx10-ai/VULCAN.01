@@ -2,25 +2,20 @@ import os
 import hashlib
 import uuid
 from flask import Flask, render_template, request, jsonify
+from supabase import create_client
 
-# === SUPABASE CONFIG (Descomentar quando tiver as credenciais) ===
-# from supabase import create_client
-# SUPABASE_URL = os.environ.get('SUPABASE_URL', '')
-# SUPABASE_KEY = os.environ.get('SUPABASE_KEY', '')
-# supabase = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL else None
+# === SUPABASE CONFIG ===
+SUPABASE_URL = 'https://vttftmbzhieocsnrltuf.supabase.co'
+SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dGZ0bWJ6aGllb2NzbnJsdHVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjM5MTA1NSwiZXhwIjoyMTAxOTY3MDU1fQ.psEljKT4TsxWWPONVStGKWuEDEwm7Ip8ieUkLiRGreE'
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = Flask(__name__)
 
 # Configurações do App
 app.config['SECRET_KEY'] = 'gym-aesthetic-secret-key-12345'
 
-# Simple in-memory user storage (replace with Supabase in production)
-users_db = {}
-saved_plans = {}
-
 @app.route('/api/auth/register', methods=['POST'])
 def register():
-    # Registers a new user
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Faltam dados'}), 400
@@ -31,20 +26,28 @@ def register():
     
     if not email or not password or not name:
         return jsonify({'error': 'Faltam dados'}), 400
-    if email in users_db:
+        
+    # Check if user exists
+    response = supabase.table('vulcan_users').select('email').eq('email', email).execute()
+    if len(response.data) > 0:
         return jsonify({'error': 'Usuário já existe'}), 400
     
     password_hash = hashlib.sha256(password.encode()).hexdigest()
-    users_db[email] = {
-        'name': name,
-        'password_hash': password_hash,
-        'token': None
-    }
-    return jsonify({'message': 'Usuário registrado com sucesso'}), 201
+    
+    try:
+        supabase.table('vulcan_users').insert({
+            'email': email,
+            'name': name,
+            'password_hash': password_hash,
+            'token': None
+        }).execute()
+        return jsonify({'message': 'Usuário registrado com sucesso'}), 201
+    except Exception as e:
+        print("Error registering:", e)
+        return jsonify({'error': 'Erro ao registrar no banco de dados'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
-    # Logs in user, returns token
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Faltam dados'}), 400
@@ -55,21 +58,23 @@ def login():
     if not email or not password:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    user = users_db.get(email)
-    if not user:
+    response = supabase.table('vulcan_users').select('*').eq('email', email).execute()
+    if len(response.data) == 0:
         return jsonify({'error': 'Credenciais inválidas'}), 401
-    
+        
+    user = response.data[0]
     password_hash = hashlib.sha256(password.encode()).hexdigest()
-    if user['password_hash'] != password_hash:
+    
+    if user.get('password_hash') != password_hash:
         return jsonify({'error': 'Credenciais inválidas'}), 401
     
     token = str(uuid.uuid4())
-    user['token'] = token
-    return jsonify({'token': token, 'name': user['name']}), 200
+    supabase.table('vulcan_users').update({'token': token}).eq('email', email).execute()
+    
+    return jsonify({'token': token, 'name': user.get('name')}), 200
 
 @app.route('/api/user/save-plan', methods=['POST'])
 def save_plan():
-    # Saves user's generated plan
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Faltam dados'}), 400
@@ -82,20 +87,23 @@ def save_plan():
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    if email not in saved_plans:
-        saved_plans[email] = {}
-    if plan:
-        saved_plans[email]['plan'] = plan
+    update_data = {}
+    if plan is not None:
+        update_data['plan'] = plan
     if progress_history is not None:
-        saved_plans[email]['progressHistory'] = progress_history
+        update_data['progressHistory'] = progress_history
     if streak is not None:
-        saved_plans[email]['streak'] = streak
+        update_data['streak'] = streak
         
-    return jsonify({'message': 'Plano salvo com sucesso'}), 200
+    try:
+        supabase.table('vulcan_users').update(update_data).eq('email', email).execute()
+        return jsonify({'message': 'Plano salvo com sucesso'}), 200
+    except Exception as e:
+        print("Error saving plan:", e)
+        return jsonify({'error': 'Erro ao salvar o plano no banco de dados'}), 500
 
 @app.route('/api/user/load-plan', methods=['POST'])
 def load_plan():
-    # Loads user's saved plan
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Faltam dados'}), 400
@@ -104,14 +112,13 @@ def load_plan():
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    user_data = saved_plans.get(email)
-    if not user_data:
+    response = supabase.table('vulcan_users').select('plan, progressHistory, streak').eq('email', email).execute()
+    if len(response.data) == 0:
         return jsonify({'error': 'Nenhum plano encontrado'}), 404
         
-    # Handle backwards compatibility for previously saved plans
-    if not isinstance(user_data, dict) or ('plan' not in user_data and 'progressHistory' not in user_data and 'streak' not in user_data):
-        return jsonify({'plan': user_data}), 200
-        
+    user_data = response.data[0]
+    
+    # Send what exists. If everything is null, we might just return empty dicts or None, front-end handles it.
     return jsonify(user_data), 200
 
 @app.route('/admin')
@@ -130,12 +137,8 @@ def admin_users():
     if email != 'silvaisaacx10@gmail.com' or password != 'vidanova':
         return jsonify({'error': 'Não autorizado'}), 401
         
-    users_list = []
-    for u_email, u_data in users_db.items():
-        users_list.append({
-            'email': u_email,
-            'name': u_data.get('name', '')
-        })
+    response = supabase.table('vulcan_users').select('email, name').execute()
+    users_list = response.data
         
     return jsonify({'users': users_list}), 200
 

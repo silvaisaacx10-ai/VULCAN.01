@@ -182,8 +182,8 @@
             const tbody = document.getElementById('users-table-body');
             tbody.innerHTML = '';
             
-            // Handle both flat array and object with data array just in case
-            const userList = Array.isArray(users) ? users : (users.data || []);
+            // Handle both flat array and object with data/users array just in case
+            const userList = Array.isArray(users) ? users : (users.users || users.data || []);
             
             userList.forEach(user => {
                 const tr = document.createElement('tr');
