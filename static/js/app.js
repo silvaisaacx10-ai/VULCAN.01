@@ -95,6 +95,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if(mainScreen) mainScreen.classList.add('active');
                     return;
                 }
+            } else if (resp.status === 403) {
+                // Usuário foi bloqueado
+                localStorage.removeItem('shredded_auth_state');
+                localStorage.removeItem('shredded_app_state');
+                authState.isLoggedIn = false;
+                showToast('Seu acesso foi bloqueado pelo administrador.', 'error');
+                if(mainScreen) mainScreen.classList.remove('active');
+                if(onboardingScreen) onboardingScreen.classList.remove('active');
+                if(loginScreen) loginScreen.classList.add('active');
+                return;
             }
         } catch (e) {
             console.error("Erro ao carregar plano:", e);
@@ -137,7 +147,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                         email: authState.email,
                         time_spent: appState.time_spent
                     })
-                }).catch(e => console.error(e));
+                })
+                .then(resp => {
+                    if (resp.status === 403) {
+                        localStorage.removeItem('shredded_auth_state');
+                        localStorage.removeItem('shredded_app_state');
+                        location.reload();
+                    }
+                })
+                .catch(e => console.error(e));
             }
         }
     }, 60000);

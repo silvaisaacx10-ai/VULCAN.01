@@ -63,6 +63,10 @@ def login():
         return jsonify({'error': 'Credenciais inválidas'}), 401
         
     user = response.data[0]
+    
+    if user.get('is_blocked'):
+        return jsonify({'error': 'Acesso bloqueado pelo administrador. Contate o suporte.'}), 403
+        
     password_hash = hashlib.sha256(password.encode()).hexdigest()
     
     if user.get('password_hash') != password_hash:
@@ -115,11 +119,14 @@ def load_plan():
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    response = supabase.table('vulcan_users').select('plan, progressHistory, streak').eq('email', email).execute()
+    response = supabase.table('vulcan_users').select('plan, progressHistory, streak, is_blocked').eq('email', email).execute()
     if len(response.data) == 0:
         return jsonify({'error': 'Nenhum plano encontrado'}), 404
         
     user_data = response.data[0]
+    
+    if user_data.get('is_blocked'):
+        return jsonify({'error': 'Acesso bloqueado'}), 403
     
     # Send what exists. If everything is null, we might just return empty dicts or None, front-end handles it.
     return jsonify(user_data), 200
@@ -146,7 +153,7 @@ def admin_users():
     if email not in valid_admins or valid_admins[email] != password:
         return jsonify({'error': 'Não autorizado'}), 401
         
-    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent').order('created_at', desc=True).execute()
+    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked').order('created_at', desc=True).execute()
     users_list = response.data
         
     return jsonify({'users': users_list}), 200
@@ -894,10 +901,37 @@ def handle_generate_plan():
         }
         
         return jsonify(response_data), 200
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+@app.route('/api/admin/toggle-block', methods=['POST'])
+def toggle_block():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    admin_email = data.get('admin_email')
+    admin_password = data.get('admin_password')
+    target_email = data.get('target_email')
+    is_blocked = data.get('is_blocked')
+    
+    valid_admins = {
+        'silvaisaacx10@gmail.com': 'vidanova',
+        'joaoeduardodeassuncao@gmail.com': 'leticio'
+    }
+    
+    if admin_email not in valid_admins or valid_admins[admin_email] != admin_password:
+        return jsonify({'error': 'Não autorizado'}), 401
+        
+    if not target_email:
+        return jsonify({'error': 'E-mail do alvo não fornecido'}), 400
+        
+    try:
+        supabase.table('vulcan_users').update({'is_blocked': is_blocked}).eq('email', target_email).execute()
+        return jsonify({'message': 'Status atualizado com sucesso'}), 200
+    except Exception as e:
+        print("Error toggling block:", e)
+        return jsonify({'error': 'Erro ao atualizar banco de dados'}), 500
 
 if __name__ == '__main__':
     # Roda localmente na porta 5000
