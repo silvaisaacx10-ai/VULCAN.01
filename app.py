@@ -83,6 +83,7 @@ def save_plan():
     plan = data.get('plan')
     progress_history = data.get('progressHistory')
     streak = data.get('streak')
+    time_spent = data.get('time_spent')
     
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
@@ -94,6 +95,8 @@ def save_plan():
         update_data['progressHistory'] = progress_history
     if streak is not None:
         update_data['streak'] = streak
+    if time_spent is not None:
+        update_data['time_spent'] = time_spent
         
     try:
         supabase.table('vulcan_users').update(update_data).eq('email', email).execute()
@@ -134,10 +137,16 @@ def admin_users():
     email = data.get('email')
     password = data.get('password')
     
-    if email != 'silvaisaacx10@gmail.com' or password != 'vidanova':
+    
+    valid_admins = {
+        'silvaisaacx10@gmail.com': 'vidanova',
+        'joaoeduardodeassuncao@gmail.com': 'leticio'
+    }
+    
+    if email not in valid_admins or valid_admins[email] != password:
         return jsonify({'error': 'Não autorizado'}), 401
         
-    response = supabase.table('vulcan_users').select('email, name').execute()
+    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent').order('created_at', desc=True).execute()
     users_list = response.data
         
     return jsonify({'users': users_list}), 200

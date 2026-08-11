@@ -12,7 +12,8 @@ let appState = {
             water: false,
             sleep: false
         }
-    }
+    },
+    time_spent: 0 // Seconds
 };
 
 let authState = {
@@ -122,6 +123,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(mainScreen) mainScreen.classList.remove('active');
         if(loginScreen) loginScreen.classList.add('active');
     }
+    
+    // Iniciar cronômetro de navegação (salva a cada 1 minuto)
+    setInterval(() => {
+        if (appState && appState.plan) {
+            appState.time_spent = (appState.time_spent || 0) + 60;
+            saveStateToStorage();
+            if (authState.isLoggedIn && authState.email) {
+                fetch('/api/user/save-plan', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email: authState.email,
+                        time_spent: appState.time_spent
+                    })
+                }).catch(e => console.error(e));
+            }
+        }
+    }, 60000);
 });
 
 // ========================================================
@@ -502,7 +521,7 @@ async function submitOnboardingForm() {
                 await fetch('/api/user/save-plan', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ email: authState.email, plan: data })
+                    body: JSON.stringify({ email: authState.email, plan: data, time_spent: appState.time_spent || 0 })
                 });
             } catch (e) {
                 console.error("Erro ao salvar plano no servidor", e);
@@ -1427,7 +1446,8 @@ function saveMeasurements() {
                 email: authState.email, 
                 plan: appState.plan,
                 progressHistory: appState.progressHistory,
-                streak: appState.streak
+                streak: appState.streak,
+                time_spent: appState.time_spent
             })
         });
     }
