@@ -162,13 +162,29 @@ function saveStateToStorage() {
 }
 
 function checkDailyReset() {
-    const today = getTodayDateString();
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    
+    d.setDate(d.getDate() - 1);
+    const yesterday = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    
+    if (appState.streak === undefined) appState.streak = 0;
+    
     if (appState.daily.date !== today) {
+        if (appState.daily.date === yesterday) {
+            appState.streak += 1; // Logged in consecutive day
+        } else if (appState.daily.date === "") {
+            appState.streak = 1; // First day generated
+        } else {
+            appState.streak = 1; // Missed a day, restart streak at 1
+        }
+        
         appState.daily.date = today;
         appState.daily.water = 0;
         appState.daily.eatenMeals = [];
         appState.daily.completedExercises = {};
         appState.daily.checklist = { diet: false, workout: false, water: false, sleep: false };
+        
         saveStateToStorage();
     }
 }
@@ -1355,24 +1371,67 @@ function openSwapModal(mealIdx, itemIdx) {
     const box = modal.querySelector('.modal-box');
     
     let swaps = [];
+    
+    // Store original name if this is the first swap
+    if (!item.original_name) {
+        item.original_name = item.name;
+        item.original_quantity = item.quantity;
+    }
+    
+    const isBreakfastOrSnack = meal.name.toLowerCase().includes('café') || meal.name.toLowerCase().includes('lanche');
+    
     if(item.carb > item.prot) {
-        swaps = [
-            { name: 'Batata Doce Cozida', mult: 1.5 },
-            { name: 'Arroz Branco', mult: 1.0 },
-            { name: 'Mandioca', mult: 1.2 }
-        ];
+        if (isBreakfastOrSnack) {
+            swaps = [
+                { name: 'Pão Integral', mult: 0.8 },
+                { name: 'Aveia em Flocos', mult: 0.5 },
+                { name: 'Banana', mult: 3.0 },
+                { name: 'Tapioca', mult: 0.9 },
+                { name: 'Frutas Picadas', mult: 2.5 }
+            ];
+        } else {
+            swaps = [
+                { name: 'Arroz Branco', mult: 1.0 },
+                { name: 'Arroz Integral', mult: 1.0 },
+                { name: 'Batata Doce Cozida', mult: 1.5 },
+                { name: 'Mandioca', mult: 1.2 },
+                { name: 'Macarrão Integral', mult: 1.0 }
+            ];
+        }
     } else if(item.prot > item.fat) {
-        swaps = [
-            { name: 'Peito de Frango', mult: 1.0 },
-            { name: 'Patinho', mult: 1.0 },
-            { name: 'Tilápia', mult: 1.3 }
-        ];
+        if (isBreakfastOrSnack) {
+            swaps = [
+                { name: 'Ovos (Unidades)', mult: 2.0 },
+                { name: 'Whey Protein', mult: 0.4 },
+                { name: 'Iogurte Natural', mult: 3.0 },
+                { name: 'Queijo Cottage', mult: 1.5 },
+                { name: 'Leite Desnatado', mult: 3.0 }
+            ];
+        } else {
+            swaps = [
+                { name: 'Peito de Frango', mult: 1.0 },
+                { name: 'Patinho (Carne Moída)', mult: 1.0 },
+                { name: 'Tilápia', mult: 1.3 },
+                { name: 'Atum', mult: 1.0 },
+                { name: 'Carne de Porco Magra', mult: 1.0 }
+            ];
+        }
     } else {
-        swaps = [
-            { name: 'Abacate', mult: 1.5 },
-            { name: 'Azeite', mult: 0.2 },
-            { name: 'Pasta de Amendoim', mult: 0.3 }
-        ];
+        if (isBreakfastOrSnack) {
+            swaps = [
+                { name: 'Ovos (Inteiros)', mult: 2.0 },
+                { name: 'Pasta de Amendoim', mult: 0.3 },
+                { name: 'Castanhas', mult: 0.3 },
+                { name: 'Leite Integral', mult: 2.5 }
+            ];
+        } else {
+            swaps = [
+                { name: 'Abacate', mult: 1.5 },
+                { name: 'Azeite', mult: 0.2 },
+                { name: 'Pasta de Amendoim', mult: 0.3 },
+                { name: 'Castanhas', mult: 0.3 }
+            ];
+        }
     }
     
     let html = `
@@ -1395,6 +1454,16 @@ function openSwapModal(mealIdx, itemIdx) {
         }
     });
     
+    // Add option to restore original
+    if (item.original_name && item.name !== item.original_name) {
+        html += `
+            <div class="grocery-item" style="cursor:pointer; background: rgba(210, 255, 0, 0.1);" onclick="restoreOriginalSwap(${mealIdx}, ${itemIdx})">
+                <span style="color:var(--accent);">Restaurar: ${item.original_name}</span>
+                <span style="color:var(--text-muted);font-size:0.8rem;">(${item.original_quantity} ${item.unit})</span>
+            </div>
+        `;
+    }
+    
     html += `</div>`;
     box.innerHTML = html;
     lucide.createIcons();
@@ -1409,6 +1478,18 @@ function performSwap(mealIdx, itemIdx, newName, multiplier) {
     renderDietTab();
     document.getElementById('swap-modal').style.display = 'none';
     showToast('Alimento substituído com sucesso!', 'success');
+}
+
+function restoreOriginalSwap(mealIdx, itemIdx) {
+    const item = appState.plan.diet_plan[mealIdx].items[itemIdx];
+    if (item.original_name) {
+        item.name = item.original_name;
+        item.quantity = item.original_quantity;
+        saveStateToStorage();
+        renderDietTab();
+        document.getElementById('swap-modal').style.display = 'none';
+        showToast('Alimento original restaurado!', 'success');
+    }
 }
 
 function saveMeasurements() {
