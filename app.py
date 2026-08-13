@@ -153,7 +153,7 @@ def admin_users():
     if email not in valid_admins or valid_admins[email] != password:
         return jsonify({'error': 'Não autorizado'}), 401
         
-    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked').order('created_at', desc=True).execute()
+    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked, blocked_by').order('created_at', desc=True).execute()
     users_list = response.data
         
     return jsonify({'users': users_list}), 200
@@ -926,8 +926,11 @@ def toggle_block():
     if not target_email:
         return jsonify({'error': 'E-mail do alvo não fornecido'}), 400
         
+    admin_name = 'Isaac' if admin_email == 'silvaisaacx10@gmail.com' else 'João'
+    blocked_by_value = admin_name if is_blocked else None
+        
     try:
-        supabase.table('vulcan_users').update({'is_blocked': is_blocked}).eq('email', target_email).execute()
+        supabase.table('vulcan_users').update({'is_blocked': is_blocked, 'blocked_by': blocked_by_value}).eq('email', target_email).execute()
         return jsonify({'message': 'Status atualizado com sucesso'}), 200
     except Exception as e:
         print("Error toggling block:", e)
