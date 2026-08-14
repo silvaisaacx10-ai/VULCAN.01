@@ -74,6 +74,32 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Carregar estado de autenticação
     loadAuthState();
 
+    // Iniciar cronômetro de navegação (salva a cada 1 minuto)
+    setInterval(() => {
+        if (appState && appState.plan) {
+            appState.time_spent = (appState.time_spent || 0) + 60;
+            saveStateToStorage();
+            if (authState.isLoggedIn && authState.email) {
+                fetch('/api/user/save-plan', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        email: authState.email,
+                        time_spent: appState.time_spent
+                    })
+                })
+                .then(resp => {
+                    if (resp.status === 403) {
+                        localStorage.removeItem('shredded_auth_state');
+                        localStorage.removeItem('shredded_app_state');
+                        location.reload();
+                    }
+                })
+                .catch(e => console.error(e));
+            }
+        }
+    }, 60000);
+
     // INIT FLOW UPDATE
     if (authState.isLoggedIn && authState.email) {
         // Tentar carregar plano do servidor
@@ -136,32 +162,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if(mainScreen) mainScreen.classList.remove('active');
         if(loginScreen) loginScreen.classList.add('active');
     }
-    
-    // Iniciar cronômetro de navegação (salva a cada 1 minuto)
-    setInterval(() => {
-        if (appState && appState.plan) {
-            appState.time_spent = (appState.time_spent || 0) + 60;
-            saveStateToStorage();
-            if (authState.isLoggedIn && authState.email) {
-                fetch('/api/user/save-plan', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        email: authState.email,
-                        time_spent: appState.time_spent
-                    })
-                })
-                .then(resp => {
-                    if (resp.status === 403) {
-                        localStorage.removeItem('shredded_auth_state');
-                        localStorage.removeItem('shredded_app_state');
-                        location.reload();
-                    }
-                })
-                .catch(e => console.error(e));
-            }
-        }
-    }, 60000);
 });
 
 // ========================================================
