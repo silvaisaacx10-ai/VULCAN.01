@@ -31,7 +31,7 @@ const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
 let loginScreen, onboardingScreen, loadingScreen, mainScreen;
 let profileForm, loadingMessage, btnSubmitWizard, btnResetPlan;
 
-// INICIALIZAﾃ�グ DO APP
+// INICIALIZAÇÃO DO APP
 document.addEventListener('DOMContentLoaded', async () => {
     // Pegar elementos globais
     loginScreen = document.getElementById('login-screen');
@@ -226,7 +226,7 @@ function resetAllData() {
 }
 
 // ========================================================
-// AUTENTICAﾃ�グ
+// AUTENTICAÇÃO
 // ========================================================
 function setupAuthTabs() {
     const tabs = document.querySelectorAll('[data-auth-tab]');
@@ -404,7 +404,7 @@ function hideToast() {
 }
 
 // ========================================================
-// VALIDAﾃ�グ FRONTEND
+// VALIDAÇÃO FRONTEND
 // ========================================================
 function validateFormData(name, age, weight, height) {
     let valid = true;
@@ -907,7 +907,7 @@ function setupChecklistListeners() {
 }
 
 // ========================================================
-// HIDRATAﾃ�グ (RASTREADOR DE ﾃ；UA)
+// HIDRATAÇÃO (RASTREADOR DE ÁGUA)
 // ========================================================
 function addWater(amount) {
     if (!appState.plan) return;
@@ -935,7 +935,7 @@ function resetWater() {
 }
 
 // ========================================================
-// GERADOR E Aﾃ�髭S DA ABA: DIETA
+// GERADOR E AÇÕES DA ABA: DIETA
 // ========================================================
 function renderDietTab() {
     const mealsContainer = document.getElementById('meals-container');
@@ -1015,7 +1015,7 @@ function renderDietTab() {
 }
 
 // ========================================================
-// GERADOR E Aﾃ�髭S DA ABA: TREINO
+// GERADOR E AÇÕES DA ABA: TREINO
 // ========================================================
 function renderWorkoutTab() {
     const dayButtons = document.querySelectorAll('.day-btn');
@@ -1220,7 +1220,7 @@ function formatTime(sec) {
 }
 
 // ========================================================
-// NAVEGAﾃ�グ DE ABAS
+// NAVEGAÇÃO DE ABAS
 // ========================================================
 function setupTabs() {
     const navItems = document.querySelectorAll('.bottom-nav .nav-item');
@@ -1248,7 +1248,7 @@ function setupTabs() {
 }
 
 // ========================================================
-// MICRO-INTERAﾃ�髭S: ANIMAﾃ�グ DE CONFETES
+// MICRO-INTERAÇÕES: ANIMAÇÃO DE CONFETES
 // ========================================================
 function triggerConfetti() {
     if (typeof confetti === 'function') {
@@ -1321,7 +1321,7 @@ function renderStreaks() {
     const badge = document.querySelector('.streak-badge');
     if(badge) {
         const streak = appState.streak || 0;
-        badge.innerHTML = `Fogo 🔥�櫨 ${streak} dias`;
+        badge.innerHTML = `Fogo 🔥 ${streak} dias`;
     }
 }
 
@@ -1334,7 +1334,7 @@ function checkAndIncrementStreak() {
             saveStateToStorage();
             renderStreaks();
             triggerConfetti();
-            showToast('Parabﾃｩns! Vocﾃｪ completou todas as missﾃｵes do dia! �櫨', 'success');
+            showToast('Parabéns! Você completou todas as missões do dia! 🏆', 'success');
         }
     }
 }
@@ -1356,7 +1356,7 @@ function openGrãoceryMoídal() {
     
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h2 style="font-family:var(--font-heading);">�將 Lista de Compras (7 Dias)</h2>
+            <h2 style="font-family:var(--font-heading);">🛒 Lista de Compras (7 Dias)</h2>
             <div style="display:flex;gap:10px;">
                 <button class="btn btn-secondary btn-icon" id="btn-pdf-grocery"><i data-lucide="download"></i> PDF</button>
                 <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
@@ -1474,7 +1474,7 @@ function openSwapMoídal(mealIdx, itemIdx) {
     
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h2 style="font-family:var(--font-heading);">�煤 Substituir Alimento</h2>
+            <h2 style="font-family:var(--font-heading);">🔄 Substituir Alimento</h2>
             <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='none'"><i data-lucide="x"></i></button>
         </div>
         <p style="color:var(--text-secondary);margin-bottom:16px;">Trocando: <strong>${item.name}</strong></p>
@@ -1644,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(btnChangePw) {
         btnChangePw.addEventListener('click', async () => {
             if(!authState.isLoggedIn) {
-                showToast('Voc� precisa estar logado!', 'error');
+                showToast('Você precisa estar logado!', 'error');
                 return;
             }
             const inputPw = document.getElementById('input-new-password');
