@@ -561,13 +561,44 @@
 
                 <!-- ABA 4: PERFIL -->
                 <section id="tab-profile" class="tab-content">
-                    <div class="profile-header card">
-                        <div class="profile-avatar">
-                            <i data-lucide="dumbbell"></i>
+                    <div class="profile-header-card" style="background: var(--bg-card); padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;">
+                        <div style="position: relative;">
+                            <img id="profile-avatar-img" src="https://ui-avatars.com/api/?name=User&background=d2ff00&color=000" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+                            <label for="profile-pic-upload" style="position: absolute; bottom: -5px; right: -5px; background: var(--bg-secondary); padding: 6px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer;">
+                                <i data-lucide="camera" style="width: 16px; height: 16px; color: var(--text-primary);"></i>
+                            </label>
+                            <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
                         </div>
-                        <h2 id="profile-user-name">Lucas</h2>
-                        <p class="profile-meta" id="profile-user-goal">Foco: Ganho de Massa Muscular</p>
-                        <p class="profile-meta" id="profile-user-email" style="font-size:0.8rem;color:var(--text-muted);"></p>
+                        <div>
+                            <h2 style="font-family: var(--font-heading);" id="profile-display-name">Usuário</h2>
+                            <p style="color: var(--text-secondary);" id="profile-user-email">email@exemplo.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-card" style="margin-bottom: 24px;">
+                        <h3><i data-lucide="line-chart"></i> Evolução de Peso</h3>
+                        <canvas id="weight-chart" width="400" height="200" style="margin-bottom: 24px;"></canvas>
+                        
+                        <h4>Atualizar Medidas (Opcional)</h4>
+                        <div class="measurement-grid" style="margin-top: 16px;">
+                            <div class="form-group"><label>Peso Atual</label><input type="number" id="meas-weight" required></div>
+                            <div class="form-group"><label>Braço</label><input type="number" id="meas-arm"></div>
+                            <div class="form-group"><label>Perna</label><input type="number" id="meas-leg"></div>
+                            <div class="form-group"><label>Quadril</label><input type="number" id="meas-hip"></div>
+                            <div class="form-group"><label>Cintura</label><input type="number" id="meas-waist"></div>
+                        </div>
+                        <button class="btn btn-accent btn-block" id="btn-save-measurements" style="margin-top: 16px;">Salvar Medidas da Semana</button>
+                    </div>
+
+                    <div class="info-card" style="margin-bottom: 24px;">
+                        <h3><i data-lucide="lock"></i> Segurança da Conta</h3>
+                        <div class="measurement-grid" style="margin-top: 16px;">
+                            <div class="form-group">
+                                <label>Nova Senha</label>
+                                <input type="password" id="input-new-password" placeholder="Mínimo 6 caracteres">
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-block" style="margin-top: 16px;" id="btn-change-password">Alterar Senha</button>
                     </div>
 
                     <!-- Dados Fisiológicos Calculados -->
@@ -610,19 +641,6 @@
                         <p style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">⚠️ Consulte um nutricionista antes de iniciar qualquer suplementação.</p>
                     </div>
 
-                    <!-- Diário de Medidas & Peso -->
-                    <div class="card">
-                        <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;margin-bottom:16px;">Diário de Medidas & Peso</h3>
-                        <canvas id="weight-chart" width="400" height="200"></canvas>
-                        <div class="measurement-grid" style="margin-top: 16px;">
-                            <div class="form-group"><label>Peso Atual</label><input type="number" id="meas-weight" required></div>
-                            <div class="form-group"><label>Braço</label><input type="number" id="meas-arm"></div>
-                            <div class="form-group"><label>Perna</label><input type="number" id="meas-leg"></div>
-                            <div class="form-group"><label>Quadril</label><input type="number" id="meas-hip"></div>
-                            <div class="form-group"><label>Cintura</label><input type="number" id="meas-waist"></div>
-                        </div>
-                        <button class="btn btn-accent btn-block" id="btn-save-measurements" style="margin-top: 16px;">Salvar Medidas da Semana</button>
-                    </div>
 
                     <!-- Configurações e Reinício -->
                     <div class="profile-actions card">
