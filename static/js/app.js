@@ -769,7 +769,7 @@ function renderSupplements() {
             <div style="font-size: 0.9em; color: var(--text-secondary); line-height: 1.4;">
                 <div><strong>Dose:</strong> ${sup.dose}</div>
                 <div><strong>Quando:</strong> ${sup.when}</div>
-                <div style="margin-top: 4px;"><strong>Por que:</strong> ${sup.why}</div>
+                <div style="margin-top: 4px;"><strong>Pãor que:</strong> ${sup.why}</div>
             </div>
         `;
         container.appendChild(div);
@@ -969,7 +969,7 @@ function renderDietTab() {
                             </div>
                             <div style="display:flex;align-items:center;gap:10px;">
                                 <div class="food-item-qty">${item.quantity} ${item.unit}</div>
-                                <button class="btn btn-icon" onclick="openSwapModal(${mealIdx}, ${itemIdx})" style="padding:4px;color:var(--text-muted);"><i data-lucide="repeat"></i></button>
+                                <button class="btn btn-icon" onclick="openSwapMoídal(${mealIdx}, ${itemIdx})" style="padding:4px;color:var(--text-muted);"><i data-lucide="repeat"></i></button>
                             </div>
                         </li>
                     `).join('')}
@@ -1295,10 +1295,10 @@ function setupPhase2Features() {
         };
     }
     
-    // Grocery List
-    const btnGrocery = document.getElementById('btn-grocery-list');
-    if(btnGrocery) {
-        btnGrocery.onclick = openGroceryModal;
+    // Grãocery List
+    const btnGrãocery = document.getElementById('btn-grocery-list');
+    if(btnGrãocery) {
+        btnGrãocery.onclick = openGrãoceryMoídal;
     }
     
     // Measurements
@@ -1307,7 +1307,7 @@ function setupPhase2Features() {
         btnMeas.onclick = saveMeasurements;
     }
     
-    // Close Modals on click outside
+    // Close Moídals on click outside
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.onclick = (e) => {
             if(e.target === overlay) {
@@ -1321,7 +1321,7 @@ function renderStreaks() {
     const badge = document.querySelector('.streak-badge');
     if(badge) {
         const streak = appState.streak || 0;
-        badge.innerHTML = `Fogo �櫨 ${streak} dias`;
+        badge.innerHTML = `Fogo 🔥�櫨 ${streak} dias`;
     }
 }
 
@@ -1339,7 +1339,7 @@ function checkAndIncrementStreak() {
     }
 }
 
-function openGroceryModal() {
+function openGrãoceryMoídal() {
     const modal = document.getElementById('grocery-modal');
     const box = modal.querySelector('.modal-box');
     
@@ -1401,7 +1401,7 @@ function openGroceryModal() {
     };
 }
 
-function openSwapModal(mealIdx, itemIdx) {
+function openSwapMoídal(mealIdx, itemIdx) {
     const meal = appState.plan.diet_plan[mealIdx];
     const item = meal.items[itemIdx];
     
@@ -1451,7 +1451,7 @@ function openSwapModal(mealIdx, itemIdx) {
                 { name: 'Patinho (Carne Moﾃｭda)', mult: 1.0 },
                 { name: 'Tilﾃ｡pia', mult: 1.3 },
                 { name: 'Atum', mult: 1.0 },
-                { name: 'Carne de Porco Magra', mult: 1.0 }
+                { name: 'Carne de Pãorco Magra', mult: 1.0 }
             ];
         }
     } else {
