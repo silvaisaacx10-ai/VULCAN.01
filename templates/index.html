@@ -1,1403 +1,1403 @@
-<!DOCTYPE html>
-
-<html lang="pt-BR">
-
-<head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-    <meta name="theme-color" content="#0a0a0c">
-
-    <meta name="description" content="SHREDDED - Seu planejador inteligente de dieta e treino personalizado. Calcule seus macros, monte sua rotina de treinos e acompanhe seu progresso.">
-
-    <title>SHREDDED - Planejador de Dieta e Treino</title>
-
-    <!-- Google Fonts -->
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-
-    <!-- Lucide Icons -->
-
-    <script src="https://unpkg.com/lucide@latest"></script>
-
-    <!-- Confetti -->
-
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- CSS Link -->
-
-    <link rel="stylesheet" href="/static/css/styles.css">
-
-</head>
-
-<body>
-
-
-
-    <!-- VALIDATION TOAST (GLOBAL) -->
-
-    <div id="validation-toast" class="validation-toast hidden">
-
-        <i data-lucide="alert-triangle" style="width:20px;height:20px;flex-shrink:0;color:var(--danger);"></i>
-
-        <span id="validation-toast-msg" style="font-size:0.85rem;color:var(--text-primary);"></span>
-
-    </div>
-
-
-
-    <!-- CONTAINER PRINCIPAL -->
-
-    <div id="app-container">
-
-
-
-        <!-- TELA 0: LOGIN / REGISTRO -->
-
-        <div id="login-screen" class="screen active">
-
-            <div class="brand-header">
-
-                <span class="logo-text">SHREDDED</span>
-
-                <span class="logo-dot">.</span>
-
-            </div>
-
-            <p style="text-align:center;color:var(--text-secondary);margin-bottom:32px;font-size:0.95rem;">
-
-                Seu plano de treino e dieta personalizado
-
-            </p>
-
-
-
-            <!-- Tabs Login / Registro -->
-
-            <div class="auth-tabs">
-
-                <button class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">Entrar</button>
-
-                <button class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">Criar Conta</button>
-
-            </div>
-
-
-
-            <!-- Formulário de Login -->
-
-            <div id="auth-login-form" class="auth-form" style="width:100%;">
-
-                <div class="form-group">
-
-                    <label for="login-email">EMAIL</label>
-
-                    <input type="email" id="login-email" placeholder="seu@email.com" required autocomplete="email">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="login-password">SENHA</label>
-
-                    <input type="password" id="login-password" placeholder="Sua senha" required autocomplete="current-password">
-
-                </div>
-
-                <button type="button" id="btn-login" class="btn btn-accent btn-block" onclick="handleLogin()">
-
-                    <i data-lucide="log-in"></i> Entrar
-
-                </button>
-
-                <div class="auth-divider">ou</div>
-
-                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
-
-                    <i data-lucide="zap"></i> Continuar sem conta
-
-                </button>
-
-            </div>
-
-
-
-            <!-- Formulário de Registro -->
-
-            <div id="auth-register-form" class="auth-form" style="width:100%;display:none;">
-
-                <div class="form-group">
-
-                    <label for="register-name">NOME</label>
-
-                    <input type="text" id="register-name" placeholder="Seu nome" required autocomplete="name">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="register-email">EMAIL</label>
-
-                    <input type="email" id="register-email" placeholder="seu@email.com" required autocomplete="email">
-
-                </div>
-
-                <div class="form-group">
-
-                    <label for="register-password">SENHA</label>
-
-                                <input type="password" id="input-new-password" placeholder="Mínimo 6 caracteres">
-                </div>
-
-                <button type="button" id="btn-register" class="btn btn-accent btn-block" onclick="handleRegister()">
-
-                    <i data-lucide="user-plus"></i> Criar Conta
-
-                </button>
-
-                <div class="auth-divider">ou</div>
-
-                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
-
-                    <i data-lucide="zap"></i> Continuar sem conta
-
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- TELA 1: ONBOARDING / WIZARD (FORMULÁRIO MULTI-ETAPAS) -->
-
-        <div id="onboarding-screen" class="screen">
-
-            <div class="brand-header">
-
-                <span class="logo-text">SHREDDED</span>
-
-                <span class="logo-dot">.</span>
-
-            </div>
-
-
-
-            <div class="wizard-progress-bar">
-
-                <div id="wizard-progress" class="progress-fill" style="width: 20%;"></div>
-
-            </div>
-
-
-
-            <div class="wizard-container">
-
-                <form id="profile-form" onsubmit="event.preventDefault();">
-
-                    
-
-                    <!-- Passo 1: Informações Básicas -->
-
-                    <div class="wizard-step active" data-step="1">
-
-                        <h2>Vamos começar. Qual é o seu nome e idade?</h2>
-
-                        <p class="step-desc">Insira seus dados básicos para personalizarmos os cálculos.</p>
-
-                        
-
-                        <div class="form-group">
-
-                            <label for="input-name">NOME / APELIDO</label>
-
-                            <input type="text" id="input-name" placeholder="Ex: Lucas" required autocomplete="off" minlength="2" maxlength="50">
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label for="input-age">IDADE</label>
-
-                            <input type="number" id="input-age" placeholder="Ex: 26" min="14" max="80" required>
-
-                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 14 e 80 anos</small>
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>GÊNERO BIOLÓGICO</label>
-
-                            <div class="gender-options">
-
-                                <label class="gender-card">
-
-                                    <input type="radio" name="gender" value="male" checked>
-
-                                    <div class="gender-content">
-
-                                        <i data-lucide="mars"></i>
-
-                                        <span>Masculino</span>
-
-                                    </div>
-
-                                </label>
-
-                                <label class="gender-card">
-
-                                    <input type="radio" name="gender" value="female">
-
-                                    <div class="gender-content">
-
-                                        <i data-lucide="venus"></i>
-
-                                        <span>Feminino</span>
-
-                                    </div>
-
-                                </label>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="wizard-nav">
-
-                            <div></div> <!-- Vazio para alinhar botão à direita -->
-
-                            <button type="button" class="btn btn-primary btn-next">
-
-                                Próximo <i data-lucide="arrow-right"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Passo 2: Medidas Físicas -->
-
-                    <div class="wizard-step" data-step="2">
-
-                        <h2>Suas medidas corporais</h2>
-
-                        <p class="step-desc">Utilizadas para calcular o seu metabolismo basal.</p>
-
-                        
-
-                        <div class="form-group">
-
-                            <label for="input-weight">PESO ATUAL (KG)</label>
-
-                            <input type="number" id="input-weight" step="0.1" placeholder="Ex: 78.5" min="30" max="250" required>
-
-                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 30 kg e 250 kg</small>
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label for="input-height">ALTURA (CM)</label>
-
-                            <input type="number" id="input-height" placeholder="Ex: 178" min="100" max="230" required>
-
-                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 100 cm e 230 cm</small>
-
-                        </div>
-
-
-
-                        <div class="wizard-nav">
-
-                            <button type="button" class="btn btn-secondary btn-prev">
-
-                                <i data-lucide="arrow-left"></i> Voltar
-
-                            </button>
-
-                            <button type="button" class="btn btn-primary btn-next">
-
-                                Próximo <i data-lucide="arrow-right"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Passo 3: Atividade e Objetivo -->
-
-                    <div class="wizard-step" data-step="3">
-
-                        <h2>Qual o seu nível de atividade e objetivo?</h2>
-
-                        <p class="step-desc">Seja sincero(a) para que possamos estimar corretamente o seu gasto diário.</p>
-
-                        
-
-                        <div class="form-group">
-
-                            <label for="input-activity">NÍVEL DE ATIVIDADE DIÁRIA</label>
-
-                            <select id="input-activity" required>
-
-                                <option value="sedentary">Sedentário (Trabalho sentado, pouco ou nenhum exercício)</option>
-
-                                <option value="light">Levemente Ativo (Exercício leve 1-3 dias/semana)</option>
-
-                                <option value="moderate" selected>Moderadamente Ativo (Exercício moderado 3-5 dias/semana)</option>
-
-                                <option value="active">Muito Ativo (Exercício intenso 6-7 dias/semana)</option>
-
-                                <option value="extreme">Extremamente Ativo (Treino pesado diário + trabalho físico)</option>
-
-                            </select>
-
-                        </div>
-
-
-
-                        <div class="form-group">
-
-                            <label>OBJETIVO PRINCIPAL</label>
-
-                            <div class="goal-options">
-
-                                <label class="goal-card">
-
-                                    <input type="radio" name="goal" value="lose" checked>
-
-                                    <div class="goal-content">
-
-                                        <i data-lucide="trending-down"></i>
-
-                                        <div>
-
-                                            <h4>Perder Peso / Secar</h4>
-
-                                            <span>Foco em queima calórica e déficit calórico controlado</span>
-
-                                        </div>
-
-                                    </div>
-
-                                </label>
-
-                                <label class="goal-card">
-
-                                    <input type="radio" name="goal" value="gain">
-
-                                    <div class="goal-content">
-
-                                        <i data-lucide="trending-up"></i>
-
-                                        <div>
-
-                                            <h4>Ganhar Massa / Hipertrofia</h4>
-
-                                            <span>Foco em ganho muscular com superávit calórico limpo</span>
-
-                                        </div>
-
-                                    </div>
-
-                                </label>
-
-                                <label class="goal-card">
-
-                                    <input type="radio" name="goal" value="maintain">
-
-                                    <div class="goal-content">
-
-                                        <i data-lucide="activity"></i>
-
-                                        <div>
-
-                                            <h4>Manutenção / Definição</h4>
-
-                                            <span>Melhorar condicionamento sem alterar peso drasticamente</span>
-
-                                        </div>
-
-                                    </div>
-
-                                </label>
-
-                            </div>
-
-                        </div>
-
-
-
-                        <div class="wizard-nav">
-
-                            <button type="button" class="btn btn-secondary btn-prev">
-
-                                <i data-lucide="arrow-left"></i> Voltar
-
-                            </button>
-
-                            <button type="button" class="btn btn-primary btn-next">
-
-                                Próximo <i data-lucide="arrow-right"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Passo 4: Preferência de Dieta -->
-
-                    <div class="wizard-step" data-step="4">
-
-                        <h2>Preferência alimentar</h2>
-
-                        <p class="step-desc">Selecione sua base de dieta para estruturarmos seu cardápio.</p>
-
-                        
-
-                        <div class="diet-options">
-
-                            <label class="diet-card">
-
-                                <input type="radio" name="diet_preference" value="standard" checked>
-
-                                <div class="diet-content">
-
-                                  <div class="diet-title">🍖 Completa (Sem restrições)</div>
-                                    <p>Carnes, ovos, laticínios, arroz, batatas e vegetais.</p>
-
-                                </div>
-
-                            </label>
-
-                            <label class="diet-card">
-
-                                <input type="radio" name="diet_preference" value="vegetarian">
-
-                                <div class="diet-content">
-
-                                  <div class="diet-title">🥗 Vegetariana</div>
-                                    <p>Ovos e laticínios inclusos, sem carnes de origem animal.</p>
-
-                                </div>
-
-                            </label>
-
-                            <label class="diet-card">
-
-                                <input type="radio" name="diet_preference" value="vegan">
-
-                                <div class="diet-content">
-
-                                  <div class="diet-title">🌱 Vegana</div>
-                                    <p>Totalmente de base vegetal. Tofu, sementes, quinoa, aveia.</p>
-
-                                </div>
-
-                            </label>
-
-                            <label class="diet-card">
-
-                                <input type="radio" name="diet_preference" value="low_carb">
-
-                                <div class="diet-content">
-
-                                  <div class="diet-title">🥑 Low Carb</div>
-                                    <p>Alta proteína e gorduras saudáveis, carboidratos reduzidos.</p>
-
-                                </div>
-
-                            </label>
-
-                        </div>
-
-
-
-                        
-
-                        
-
-                        <div class="wizard-nav">
-
-                            <button type="button" class="btn btn-secondary btn-prev">
-
-                                <i data-lucide="arrow-left"></i> Voltar
-
-                            </button>
-
-                            <button type="button" id="btn-submit-wizard" class="btn btn-accent">
-
-                                Gerar Meu Plano <i data-lucide="dumbbell"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- TELA DE LOADING DA GERAÇÃO -->
-
-        <div id="loading-screen" class="screen">
-
-            <div class="loader-content">
-
-                <div class="pulsing-circle">
-
-                    <i data-lucide="dumbbell"></i>
-
-                </div>
-
-                <h2 id="loading-message">Calculando sua taxa metabólica...</h2>
-
-                <div class="loader-bar">
-
-                    <div class="loader-progress"></div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- TELA 2: DASHBOARD E CONTEÚDO PRINCIPAL -->
-
-        <div id="main-screen" class="screen">
-
-            
-
-            <!-- HEADER DO APP -->
-
-            <header class="app-header">
-
-                <div class="user-greeting-box">
-
-                    <span class="welcome-text">E AÍ, MONSTRO!</span>
-
-                    <h1 class="user-name" id="display-user-name">Lucas</h1>
-
-                </div>
-
-                <div class="header-logo">
-
-                    <span>SHREDDED</span>
-
-                            <div class="streak-badge">Fogo 🔥 0 dias</div>
-                </div>
-
-            </header>
-
-
-
-            <!-- CONTEÚDO DE CADA ABA -->
-
-            <main class="app-content">
-
-
-
-                <!-- ABA 1: DASHBOARD -->
-
-                <section id="tab-dashboard" class="tab-content active">
-
-
-
-                    <!-- Card de IMC -->
-
-                    <div class="bmi-card" id="bmi-card-container">
-
-                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-
-                            <div>
-
-                                <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">IMC (Índice de Massa Corporal)</span>
-
-                                <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">
-
-                                    <span class="bmi-value" id="dash-bmi-value">0</span>
-
-                                    <span class="bmi-class-badge" id="dash-bmi-badge" data-status="normal">Normal</span>
-
-                                </div>
-
-                            </div>
-
-                            <i data-lucide="scale" style="width:28px;height:28px;color:var(--accent);"></i>
-
-                        </div>
-
-                        <div class="bmi-bar-container">
-
-                            <div class="bmi-indicator" id="bmi-indicator" style="left:50%;"></div>
-
-                        </div>
-
-                        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.65rem;color:var(--text-muted);">
-
-                            <span>Abaixo</span>
-
-                            <span>Normal</span>
-
-                            <span>Sobrepeso</span>
-
-                            <span>Obeso</span>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Cards de Calorias Diárias -->
-
-                    <div class="calorie-ring-container card">
-
-                        <div class="calorie-progress-wrapper">
-
-                            <!-- SVG circular progress bar -->
-
-                            <svg class="progress-ring" width="160" height="160">
-
-                                <circle class="progress-ring-circle-bg" stroke="#1d1d24" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
-
-                                <circle id="calorie-progress-circle" class="progress-ring-circle" stroke="#c8ff00" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
-
-                            </svg>
-
-                            <div class="calorie-text">
-
-                                <span class="calorie-number" id="daséries-eaten">0</span>
-
-                                <span class="calorie-divider">/</span>
-
-                                <span class="calorie-target" id="daséries-target">2400</span>
-
-                                <span class="calorie-label">kcal consumidas</span>
-
-                            </div>
-
-                        </div>
-
-                        
-
-                        <div class="macro-bars">
-
-                            <div class="macro-bar-item">
-
-                                <div class="macro-bar-header">
-
-                                    <span>🥩 Proteínas</span>
-
-                                    <span id="dash-macro-protein-txt">0/150g</span>
-
-                                </div>
-
-                                <div class="macro-progress-bg">
-
-                                    <div id="dash-macro-protein-bar" class="macro-progress-fill protein" style="width: 0%;"></div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="macro-bar-item">
-
-                                <div class="macro-bar-header">
-
-                                    <span>🍚 Carboidratos</span>
-
-                                    <span id="dash-macro-carbs-txt">0/240g</span>
-
-                                </div>
-
-                                <div class="macro-progress-bg">
-
-                                    <div id="dash-macro-carbs-bar" class="macro-progress-fill carbs" style="width: 0%;"></div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="macro-bar-item">
-
-                                <div class="macro-bar-header">
-
-                                    <span>🥑 Gorduras</span>
-
-                                    <span id="dash-macro-fats-txt">0/70g</span>
-
-                                </div>
-
-                                <div class="macro-progress-bg">
-
-                                    <div id="dash-macro-fats-bar" class="macro-progress-fill fats" style="width: 0%;"></div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Card de Estimativa de Progresso -->
-
-                    <div class="progress-card card" id="progress-card-container">
-
-                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-
-                            <i data-lucide="target" style="width:24px;height:24px;color:var(--accent);"></i>
-
-                            <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.05rem;">Estimativa de Progresso</h3>
-
-                        </div>
-
-                        <div class="stats-grid">
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Pãor Semana</span>
-
-                                <span class="stat-value" id="progress-weekly" style="font-size:0.9rem;">-</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Pãor Mês</span>
-
-                                <span class="stat-value" id="progress-monthly" style="font-size:0.9rem;">-</span>
-
-                            </div>
-
-                            <div class="stat-item" style="grid-column:1/-1;">
-
-                                <span class="stat-label">Tempo Estimado</span>
-
-                                <span class="stat-value" id="progress-timeline" style="font-size:0.9rem;">-</span>
-
-                            </div>
-
-                        </div>
-
-                        <p id="progress-disclaimer" style="font-size:0.7rem;color:var(--text-muted);margin-top:10px;font-style:italic;"></p>
-
-                    </div>
-
-
-
-                    <!-- Grid de Widgets: Água e Checklist -->
-
-                    <div class="widgets-grid">
-
-                        
-
-                        <!-- Widget de Água -->
-
-                        <div class="widget-card card water-widget">
-
-                            <h3>💧 Hidratação</h3>
-
-                            <div class="water-progress-container">
-
-                                <div class="water-glass-display">
-
-                                    <div class="wave-container">
-
-                                        <div id="water-wave" class="wave" style="bottom: 0%;"></div>
-
-                                    </div>
-
-                                    <span id="water-amount-txt">0 ml</span>
-
-                                </div>
-
-                                <div class="water-controls">
-
-                                    <button class="btn btn-icon btn-water-add" onclick="addWater(250)">
-
-                                        <i data-lucide="plus"></i> 250ml
-
-                                    </button>
-
-                                    <button class="btn btn-icon btn-water-add" onclick="addWater(500)">
-
-                                        <i data-lucide="plus"></i> 500ml
-
-                                    </button>
-
-                                    <button class="btn btn-icon btn-water-reset" onclick="resetWater()" title="Zerar Água">
-
-                                        <i data-lucide="rotate-ccw"></i>
-
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                            <span class="water-target-txt">Meta: <strong id="water-target-val">3000</strong> ml</span>
-
-                        </div>
-
-
-
-                        <!-- Widget de Checklist Diário -->
-
-                        <div class="widget-card card checklist-widget">
-
-                            <h3>🚀 Missões do Dia</h3>
-
-                            <ul class="checklist-items">
-
-                                <li>
-
-                                    <label class="checkbox-container">
-
-                                        <input type="checkbox" id="chk-diet">
-
-                                        <span class="checkmark"></span>
-
-                                        <span>Seguir a Dieta Planejada</span>
-
-                                    </label>
-
-                                </li>
-
-                                <li>
-
-                                    <label class="checkbox-container">
-
-                                        <input type="checkbox" id="chk-workout">
-
-                                        <span class="checkmark"></span>
-
-                                        <span>Completar o Treino do Dia</span>
-
-                                    </label>
-
-                                </li>
-
-                                <li>
-
-                                    <label class="checkbox-container">
-
-                                        <input type="checkbox" id="chk-water">
-
-                                        <span class="checkmark"></span>
-
-                                        <span>Bater a Meta de Água</span>
-
-                                    </label>
-
-                                </li>
-
-                                <li>
-
-                                    <label class="checkbox-container">
-
-                                        <input type="checkbox" id="chk-sleep">
-
-                                        <span class="checkmark"></span>
-
-                                        <span>Dormir 7-8 horas</span>
-
-                                    </label>
-
-                                </li>
-
-                            </ul>
-
-                        </div>
-
-
-
-                        <!-- Dicas do Dia -->
-
-                        <div class="tips-card" id="tips-container">
-
-                            <div style="display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border-color);">
-
-                                <i data-lucide="lightbulb" style="width:20px;height:20px;color:var(--accent);"></i>
-
-                                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;">💡 Dicas para Você</h3>
-
-                            </div>
-
-                            <!-- Tips are rendered dynamically by JS -->
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ABA 2: TREINO -->
-
-                <section id="tab-workout" class="tab-content">
-
-                    <div class="workout-header">
-
-                        <h2>Ficha de Treino Semanal</h2>
-
-                        <p class="workout-goal-desc" id="workout-goal-desc">Hipertrofia - Divisão ABC</p>
-
-                    </div>
-
-
-
-                    <!-- Seletor de Dia da Semana -->
-
-                    <div class="day-selector-container">
-
-                        <div class="day-selector">
-
-                            <button class="day-btn active" data-day="0">Seg</button>
-
-                            <button class="day-btn" data-day="1">Ter</button>
-
-                            <button class="day-btn" data-day="2">Qua</button>
-
-                            <button class="day-btn" data-day="3">Qui</button>
-
-                            <button class="day-btn" data-day="4">Sex</button>
-
-                            <button class="day-btn" data-day="5">Sáb</button>
-
-                            <button class="day-btn" data-day="6">Dom</button>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Detalhes do Treino do Dia Selecionado -->
-
-                    <div id="workout-day-details" class="card workout-day-card">
-
-                        <div class="workout-day-title-box">
-
-                            <h3 id="workout-day-name">Treino A - Peito, Ombros e Tríceps</h3>
-
-                            <span class="workout-badge" id="workout-day-tag">Hipertrofia</span>
-
-                        </div>
-
-
-
-                        <!-- Lista de Exercícios -->
-
-                        <div class="exercises-list" id="exercises-container">
-
-                            <!-- Gerado dinamicamente via JS -->
-
-                        </div>
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ABA 3: DIETA -->
-
-                <section id="tab-diet" class="tab-content">
-
-                    <div class="diet-header">
-
-                        <h2>Cardápio Personalizado</h2>
-                        <button id="btn-export-pdf" class="btn btn-secondary btn-icon"><i data-lucide="download"></i> Baixar PDF</button>
-
-                        <div class="diet-summary-pills">
-
-                            <span class="pill"><i data-lucide="flame"></i> <span id="diet-pill-cal">2400</span> kcal</span>
-
-                            <span class="pill"><i data-lucide="beef"></i> P: <span id="diet-pill-prot">150</span>g</span>
-
-                            <span class="pill"><i data-lucide="wheat"></i> C: <span id="diet-pill-carb">240</span>g</span>
-
-                            <span class="pill"><i data-lucide="droplet"></i> G: <span id="diet-pill-fat">70</span>g</span>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Informações Educativas sobre Macros -->
-
-                    <button id="btn-grocery-list" class="btn btn-primary btn-block" style="margin-bottom: 16px;"><i data-lucide="shopping-cart"></i> Gerar Lista de Compras</button>
-
-                    <div class="info-section">
-
-                        <div class="info-card">
-
-                            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;" onclick="this.parentElement.classList.toggle('expanded')">
-
-                                <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent);"></i>
-
-                                <span style="font-family:var(--font-heading);font-weight:700;font-size:0.9rem;">📚 Entenda seus Macronutrientes</span>
-
-                                <i data-lucide="chevron-down" style="width:16px;height:16px;margin-left:auto;color:var(--text-muted);"></i>
-
-                            </div>
-
-                            <div class="exercise-collapse">
-
-                                <div style="padding:0 16px 16px 16px;font-size:0.8rem;color:var(--text-secondary);line-height:1.6;">
-
-                                    <p><strong style="color:var(--color-protein);">🥩 Proteínas (4 kcal/g):</strong> Essenciais para reparação e crescimento muscular. Consuma distribuídas ao longo do dia.</p>
-                                    <p style="margin-top:8px;"><strong style="color:var(--color-carbs);">🍚 Carboidratos (4 kcal/g):</strong> Principal fonte de energia para treinos intensos. Priorize fontes complexas (arroz integral, batata doce, aveia).</p>
-                                    <p style="margin-top:8px;"><strong style="color:var(--color-fats);">🥑 Gorduras (9 kcal/g):</strong> Fundamentais para produção hormonal (testosterona). Fontes: azeite, abacate, castanhas, peixes.</p>
-                                    <p style="margin-top:8px;"><strong style="color:var(--accent);">💧 Água:</strong> Beba pelo menos 35ml por kg de peso corporal. A hidratação impacta diretamente na performance e recuperação.</p>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Lista de Refeições -->
-
-                    <div class="meals-list" id="meals-container">
-
-                        <!-- Gerado dinamicamente via JS -->
-
-                    </div>
-
-                </section>
-
-
-
-                <!-- ABA 4: PERFIL -->
-
-                <section id="tab-profile" class="tab-content">
-
-                    <div class="profile-header-card" style="background: var(--bg-card); padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;">
-
-                        <div style="position: relative;">
-
-                            <img id="profile-avatar-img" src="https://ui-avatars.com/api/?name=User&background=d2ff00&color=000" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
-
-                            <label for="profile-pic-upload" style="position: absolute; bottom: -5px; right: -5px; background: var(--bg-secondary); padding: 6px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer;">
-
-                                <i data-lucide="camera" style="width: 16px; height: 16px; color: var(--text-primary);"></i>
-
-                            </label>
-
-                            <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
-
-                        </div>
-
-                        <div>
-
-                            <h2 style="font-family: var(--font-heading);" id="profile-display-name">Usuário</h2>
-                            <p style="color: var(--text-secondary);" id="profile-user-email">email@exemplo.com</p>
-
-                        </div>
-
-                    </div>
-
-                    
-
-                    <div class="info-card" style="margin-bottom: 24px;">
-
-                        <h3><i data-lucide="line-chart"></i> Evolução de Peso</h3>
-
-                        <canvas id="weight-chart" width="400" height="200" style="margin-bottom: 24px;"></canvas>
-
-                        
-
-                        <h4>Atualizar Medidas (Opcional)</h4>
-
-                        <div class="measurement-grid" style="margin-top: 16px;">
-
-                            <div class="form-group"><label>Peso Atual</label><input type="number" id="meas-weight" required></div>
-
-                            <div class="form-group"><label>Braço</label><input type="number" id="meas-arm"></div>
-
-                            <div class="form-group"><label>Perna</label><input type="number" id="meas-leg"></div>
-
-                            <div class="form-group"><label>Quadril</label><input type="number" id="meas-hip"></div>
-
-                            <div class="form-group"><label>Cintura</label><input type="number" id="meas-waist"></div>
-
-                        </div>
-
-                        <button class="btn btn-accent btn-block" id="btn-save-measurements" style="margin-top: 16px;">Salvar Medidas da Semana</button>
-
-                    </div>
-
-
-
-                    <div class="info-card" style="margin-bottom: 24px;">
-
-                        <h3><i data-lucide="lock"></i> Segurança da Conta</h3>
-
-                        <div class="measurement-grid" style="margin-top: 16px;">
-
-                            <div class="form-group">
-
-                                <label>Nova Senha</label>
-
-                                <input type="password" id="input-new-password" placeholder="Mínimo 6 caracteres">
-                            </div>
-
-                        </div>
-
-                        <button class="btn btn-secondary btn-block" style="margin-top: 16px;" id="btn-change-password">Alterar Senha</button>
-
-                    </div>
-
-
-
-                    <!-- Dados Fisiológicos Calculados -->
-
-                    <div class="profile-stats card">
-
-                        <h3>Métricas Fisiológicas</h3>
-
-                        <div class="stats-grid">
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Peso</span>
-
-                                <span class="stat-value" id="prof-weight">78 kg</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Altura</span>
-
-                                <span class="stat-value" id="prof-height">178 cm</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Taxa Basal (BMR)</span>
-
-                                <span class="stat-value" id="prof-bmr">1750 kcal</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Gasto Diário (TDEE)</span>
-
-                                <span class="stat-value" id="prof-tdee">2600 kcal</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">IMC</span>
-
-                                <span class="stat-value" id="prof-bmi">24.6</span>
-
-                            </div>
-
-                            <div class="stat-item">
-
-                                <span class="stat-label">Classificação</span>
-
-                                <span class="stat-value" id="prof-bmi-class">Normal</span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-
-                    <!-- Suplementação Sugerida -->
-
-                    <div class="card" id="supplements-card">
-
-                        <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;margin-bottom:16px;">💊 Suplementação Sugerida</h3>
-
-                        <div class="supplements-section" id="supplements-container">
-
-                            <!-- Gerado dinamicamente via JS -->
-
-                        </div>
-
-                        <p style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">⚠️ Consulte um nutricionista antes de iniciar qualquer suplementação.</p>
-
-                    </div>
-
-
-
-
-
-                    <!-- Configurações e Reinício -->
-
-                    <div class="profile-actions card">
-
-                        <h3>Ações da Conta</h3>
-
-                        <p class="settings-desc">Se você mudou de peso ou quer alterar o seu objetivo, clique abaixo para gerar um novo plano.</p>
-
-                        <button id="btn-reset-plan" class="btn btn-danger btn-block" style="margin-bottom:10px;">
-
-                            <i data-lucide="refresh-cw"></i> Redefinir Dados e Plano
-
-                        </button>
-
-                        <button id="btn-logout" class="btn-logout" onclick="handleLogout()" style="display:none;">
-
-                            <i data-lucide="log-out" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;"></i> Sair da Conta
-
-                        </button>
-
-                    </div>
-
-                </section>
-
-
-
-            </main>
-
-
-
-            <!-- BARRA DE NAVEGAÇÃO INFERIOR (BOTTOM NAV) -->
-
-            <nav class="bottom-nav">
-
-                <button class="nav-item active" data-tab="dashboard">
-
-                    <i data-lucide="layout-dashboard"></i>
-
-                    <span>Painel</span>
-
-                </button>
-
-                <button class="nav-item" data-tab="workout">
-
-                    <i data-lucide="dumbbell"></i>
-
-                    <span>Treino</span>
-
-                </button>
-
-                <button class="nav-item" data-tab="diet">
-
-                    <i data-lucide="utensils"></i>
-
-                    <span>Dieta</span>
-
-                </button>
-
-                <button class="nav-item" data-tab="profile">
-
-                    <i data-lucide="user"></i>
-
-                    <span>Perfil</span>
-
-                </button>
-
-            </nav>
-
-
-
-        </div>
-
-
-
-        <!-- REST TIMER OVERLAY -->
-
-        <div id="rest-timer-overlay" class="rest-timer-overlay" style="display:none;">
-
-            <div class="rest-timer-circle">
-
-                <span class="rest-timer-text" id="rest-timer-display">60</span>
-
-            </div>
-
-            <p style="color:var(--text-secondary);margin-bottom:20px;font-family:var(--font-heading);font-weight:700;">Descanso entre séries</p>
-            <button class="btn btn-accent" onclick="stopRestTimer()" style="min-width:180px;">
-
-                <i data-lucide="x"></i> Pular Descanso
-
-            </button>
-
-        </div>
-
-
-
-    </div>
-
-
-
-    <!-- MODALS -->
-
-    <div id="grocery-modal" class="modal-overlay" style="display:none;">
-
-        <div class="modal-box"></div>
-
-    </div>
-
-    <div id="swap-modal" class="modal-overlay" style="display:none;">
-
-        <div class="modal-box"></div>
-
-    </div>
-
-
-
-    <!-- JS Link -->
-
-    <script src="/static/js/app.js"></script>
-
-</body>
-
-</html>
-
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta name="theme-color" content="#0a0a0c">
+
+    <meta name="description" content="SHREDDED - Seu planejador inteligente de dieta e treino personalizado. Calcule seus macros, monte sua rotina de treinos e acompanhe seu progresso.">
+
+    <title>SHREDDED - Planejador de Dieta e Treino</title>
+
+    <!-- Google Fonts -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Confetti -->
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- CSS Link -->
+
+    <link rel="stylesheet" href="/static/css/styles.css">
+
+</head>
+
+<body>
+
+
+
+    <!-- VALIDATION TOAST (GLOBAL) -->
+
+    <div id="validation-toast" class="validation-toast hidden">
+
+        <i data-lucide="alert-triangle" style="width:20px;height:20px;flex-shrink:0;color:var(--danger);"></i>
+
+        <span id="validation-toast-msg" style="font-size:0.85rem;color:var(--text-primary);"></span>
+
+    </div>
+
+
+
+    <!-- CONTAINER PRINCIPAL -->
+
+    <div id="app-container">
+
+
+
+        <!-- TELA 0: LOGIN / REGISTRO -->
+
+        <div id="login-screen" class="screen active">
+
+            <div class="brand-header">
+
+                <span class="logo-text">SHREDDED</span>
+
+                <span class="logo-dot">.</span>
+
+            </div>
+
+            <p style="text-align:center;color:var(--text-secondary);margin-bottom:32px;font-size:0.95rem;">
+
+                Seu plano de treino e dieta personalizado
+
+            </p>
+
+
+
+            <!-- Tabs Login / Registro -->
+
+            <div class="auth-tabs">
+
+                <button class="auth-tab active" data-auth-tab="login" onclick="switchAuthTab('login')">Entrar</button>
+
+                <button class="auth-tab" data-auth-tab="register" onclick="switchAuthTab('register')">Criar Conta</button>
+
+            </div>
+
+
+
+            <!-- Formulário de Login -->
+
+            <div id="auth-login-form" class="auth-form" style="width:100%;">
+
+                <div class="form-group">
+
+                    <label for="login-email">EMAIL</label>
+
+                    <input type="email" id="login-email" placeholder="seu@email.com" required autocomplete="email">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="login-password">SENHA</label>
+
+                    <input type="password" id="login-password" placeholder="Sua senha" required autocomplete="current-password">
+
+                </div>
+
+                <button type="button" id="btn-login" class="btn btn-accent btn-block" onclick="handleLogin()">
+
+                    <i data-lucide="log-in"></i> Entrar
+
+                </button>
+
+                <div class="auth-divider">ou</div>
+
+                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
+
+                    <i data-lucide="zap"></i> Continuar sem conta
+
+                </button>
+
+            </div>
+
+
+
+            <!-- Formulário de Registro -->
+
+            <div id="auth-register-form" class="auth-form" style="width:100%;display:none;">
+
+                <div class="form-group">
+
+                    <label for="register-name">NOME</label>
+
+                    <input type="text" id="register-name" placeholder="Seu nome" required autocomplete="name">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="register-email">EMAIL</label>
+
+                    <input type="email" id="register-email" placeholder="seu@email.com" required autocomplete="email">
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="register-password">SENHA</label>
+
+                                <input type="password" id="input-new-password" placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <button type="button" id="btn-register" class="btn btn-accent btn-block" onclick="handleRegister()">
+
+                    <i data-lucide="user-plus"></i> Criar Conta
+
+                </button>
+
+                <div class="auth-divider">ou</div>
+
+                <button type="button" class="btn btn-secondary btn-block" onclick="skipLogin()">
+
+                    <i data-lucide="zap"></i> Continuar sem conta
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TELA 1: ONBOARDING / WIZARD (FORMULÁRIO MULTI-ETAPAS) -->
+
+        <div id="onboarding-screen" class="screen">
+
+            <div class="brand-header">
+
+                <span class="logo-text">SHREDDED</span>
+
+                <span class="logo-dot">.</span>
+
+            </div>
+
+
+
+            <div class="wizard-progress-bar">
+
+                <div id="wizard-progress" class="progress-fill" style="width: 20%;"></div>
+
+            </div>
+
+
+
+            <div class="wizard-container">
+
+                <form id="profile-form" onsubmit="event.preventDefault();">
+
+                    
+
+                    <!-- Passo 1: Informações Básicas -->
+
+                    <div class="wizard-step active" data-step="1">
+
+                        <h2>Vamos começar. Qual é o seu nome e idade?</h2>
+
+                        <p class="step-desc">Insira seus dados básicos para personalizarmos os cálculos.</p>
+
+                        
+
+                        <div class="form-group">
+
+                            <label for="input-name">NOME / APELIDO</label>
+
+                            <input type="text" id="input-name" placeholder="Ex: Lucas" required autocomplete="off" minlength="2" maxlength="50">
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label for="input-age">IDADE</label>
+
+                            <input type="number" id="input-age" placeholder="Ex: 26" min="14" max="80" required>
+
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 14 e 80 anos</small>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label>GÊNERO BIOLÓGICO</label>
+
+                            <div class="gender-options">
+
+                                <label class="gender-card">
+
+                                    <input type="radio" name="gender" value="male" checked>
+
+                                    <div class="gender-content">
+
+                                        <i data-lucide="mars"></i>
+
+                                        <span>Masculino</span>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="gender-card">
+
+                                    <input type="radio" name="gender" value="female">
+
+                                    <div class="gender-content">
+
+                                        <i data-lucide="venus"></i>
+
+                                        <span>Feminino</span>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="wizard-nav">
+
+                            <div></div> <!-- Vazio para alinhar botão à direita -->
+
+                            <button type="button" class="btn btn-primary btn-next">
+
+                                Próximo <i data-lucide="arrow-right"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Passo 2: Medidas Físicas -->
+
+                    <div class="wizard-step" data-step="2">
+
+                        <h2>Suas medidas corporais</h2>
+
+                        <p class="step-desc">Utilizadas para calcular o seu metabolismo basal.</p>
+
+                        
+
+                        <div class="form-group">
+
+                            <label for="input-weight">PESO ATUAL (KG)</label>
+
+                            <input type="number" id="input-weight" step="0.1" placeholder="Ex: 78.5" min="30" max="250" required>
+
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 30 kg e 250 kg</small>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label for="input-height">ALTURA (CM)</label>
+
+                            <input type="number" id="input-height" placeholder="Ex: 178" min="100" max="230" required>
+
+                            <small style="color:var(--text-muted);font-size:0.75rem;">Entre 100 cm e 230 cm</small>
+
+                        </div>
+
+
+
+                        <div class="wizard-nav">
+
+                            <button type="button" class="btn btn-secondary btn-prev">
+
+                                <i data-lucide="arrow-left"></i> Voltar
+
+                            </button>
+
+                            <button type="button" class="btn btn-primary btn-next">
+
+                                Próximo <i data-lucide="arrow-right"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Passo 3: Atividade e Objetivo -->
+
+                    <div class="wizard-step" data-step="3">
+
+                        <h2>Qual o seu nível de atividade e objetivo?</h2>
+
+                        <p class="step-desc">Seja sincero(a) para que possamos estimar corretamente o seu gasto diário.</p>
+
+                        
+
+                        <div class="form-group">
+
+                            <label for="input-activity">NÍVEL DE ATIVIDADE DIÁRIA</label>
+
+                            <select id="input-activity" required>
+
+                                <option value="sedentary">Sedentário (Trabalho sentado, pouco ou nenhum exercício)</option>
+
+                                <option value="light">Levemente Ativo (Exercício leve 1-3 dias/semana)</option>
+
+                                <option value="moderate" selected>Moderadamente Ativo (Exercício moderado 3-5 dias/semana)</option>
+
+                                <option value="active">Muito Ativo (Exercício intenso 6-7 dias/semana)</option>
+
+                                <option value="extreme">Extremamente Ativo (Treino pesado diário + trabalho físico)</option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <label>OBJETIVO PRINCIPAL</label>
+
+                            <div class="goal-options">
+
+                                <label class="goal-card">
+
+                                    <input type="radio" name="goal" value="lose" checked>
+
+                                    <div class="goal-content">
+
+                                        <i data-lucide="trending-down"></i>
+
+                                        <div>
+
+                                            <h4>Perder Peso / Secar</h4>
+
+                                            <span>Foco em queima calórica e déficit calórico controlado</span>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="goal-card">
+
+                                    <input type="radio" name="goal" value="gain">
+
+                                    <div class="goal-content">
+
+                                        <i data-lucide="trending-up"></i>
+
+                                        <div>
+
+                                            <h4>Ganhar Massa / Hipertrofia</h4>
+
+                                            <span>Foco em ganho muscular com superávit calórico limpo</span>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                                <label class="goal-card">
+
+                                    <input type="radio" name="goal" value="maintain">
+
+                                    <div class="goal-content">
+
+                                        <i data-lucide="activity"></i>
+
+                                        <div>
+
+                                            <h4>Manutenção / Definição</h4>
+
+                                            <span>Melhorar condicionamento sem alterar peso drasticamente</span>
+
+                                        </div>
+
+                                    </div>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+
+                        <div class="wizard-nav">
+
+                            <button type="button" class="btn btn-secondary btn-prev">
+
+                                <i data-lucide="arrow-left"></i> Voltar
+
+                            </button>
+
+                            <button type="button" class="btn btn-primary btn-next">
+
+                                Próximo <i data-lucide="arrow-right"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Passo 4: Preferência de Dieta -->
+
+                    <div class="wizard-step" data-step="4">
+
+                        <h2>Preferência alimentar</h2>
+
+                        <p class="step-desc">Selecione sua base de dieta para estruturarmos seu cardápio.</p>
+
+                        
+
+                        <div class="diet-options">
+
+                            <label class="diet-card">
+
+                                <input type="radio" name="diet_preference" value="standard" checked>
+
+                                <div class="diet-content">
+
+                                  <div class="diet-title">🍖 Completa (Sem restrições)</div>
+                                    <p>Carnes, ovos, laticínios, arroz, batatas e vegetais.</p>
+
+                                </div>
+
+                            </label>
+
+                            <label class="diet-card">
+
+                                <input type="radio" name="diet_preference" value="vegetarian">
+
+                                <div class="diet-content">
+
+                                  <div class="diet-title">🥗 Vegetariana</div>
+                                    <p>Ovos e laticínios inclusos, sem carnes de origem animal.</p>
+
+                                </div>
+
+                            </label>
+
+                            <label class="diet-card">
+
+                                <input type="radio" name="diet_preference" value="vegan">
+
+                                <div class="diet-content">
+
+                                  <div class="diet-title">🌱 Vegana</div>
+                                    <p>Totalmente de base vegetal. Tofu, sementes, quinoa, aveia.</p>
+
+                                </div>
+
+                            </label>
+
+                            <label class="diet-card">
+
+                                <input type="radio" name="diet_preference" value="low_carb">
+
+                                <div class="diet-content">
+
+                                  <div class="diet-title">🥑 Low Carb</div>
+                                    <p>Alta proteína e gorduras saudáveis, carboidratos reduzidos.</p>
+
+                                </div>
+
+                            </label>
+
+                        </div>
+
+
+
+                        
+
+                        
+
+                        <div class="wizard-nav">
+
+                            <button type="button" class="btn btn-secondary btn-prev">
+
+                                <i data-lucide="arrow-left"></i> Voltar
+
+                            </button>
+
+                            <button type="button" id="btn-submit-wizard" class="btn btn-accent">
+
+                                Gerar Meu Plano <i data-lucide="dumbbell"></i>
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TELA DE LOADING DA GERAÇÃO -->
+
+        <div id="loading-screen" class="screen">
+
+            <div class="loader-content">
+
+                <div class="pulsing-circle">
+
+                    <i data-lucide="dumbbell"></i>
+
+                </div>
+
+                <h2 id="loading-message">Calculando sua taxa metabólica...</h2>
+
+                <div class="loader-bar">
+
+                    <div class="loader-progress"></div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TELA 2: DASHBOARD E CONTEÚDO PRINCIPAL -->
+
+        <div id="main-screen" class="screen">
+
+            
+
+            <!-- HEADER DO APP -->
+
+            <header class="app-header">
+
+                <div class="user-greeting-box">
+
+                    <span class="welcome-text">E AÍ, MONSTRO!</span>
+
+                    <h1 class="user-name" id="display-user-name">Lucas</h1>
+
+                </div>
+
+                <div class="header-logo">
+
+                    <span>SHREDDED</span>
+
+                            <div class="streak-badge">Fogo 🔥 0 dias</div>
+                </div>
+
+            </header>
+
+
+
+            <!-- CONTEÚDO DE CADA ABA -->
+
+            <main class="app-content">
+
+
+
+                <!-- ABA 1: DASHBOARD -->
+
+                <section id="tab-dashboard" class="tab-content active">
+
+
+
+                    <!-- Card de IMC -->
+
+                    <div class="bmi-card" id="bmi-card-container">
+
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+
+                            <div>
+
+                                <span style="font-size:0.75rem;color:var(--text-muted);font-weight:700;letter-spacing:1px;text-transform:uppercase;">IMC (Índice de Massa Corporal)</span>
+
+                                <div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;">
+
+                                    <span class="bmi-value" id="dash-bmi-value">0</span>
+
+                                    <span class="bmi-class-badge" id="dash-bmi-badge" data-status="normal">Normal</span>
+
+                                </div>
+
+                            </div>
+
+                            <i data-lucide="scale" style="width:28px;height:28px;color:var(--accent);"></i>
+
+                        </div>
+
+                        <div class="bmi-bar-container">
+
+                            <div class="bmi-indicator" id="bmi-indicator" style="left:50%;"></div>
+
+                        </div>
+
+                        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:0.65rem;color:var(--text-muted);">
+
+                            <span>Abaixo</span>
+
+                            <span>Normal</span>
+
+                            <span>Sobrepeso</span>
+
+                            <span>Obeso</span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Cards de Calorias Diárias -->
+
+                    <div class="calorie-ring-container card">
+
+                        <div class="calorie-progress-wrapper">
+
+                            <!-- SVG circular progress bar -->
+
+                            <svg class="progress-ring" width="160" height="160">
+
+                                <circle class="progress-ring-circle-bg" stroke="#1d1d24" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+
+                                <circle id="calorie-progress-circle" class="progress-ring-circle" stroke="#c8ff00" stroke-width="12" fill="transparent" r="70" cx="80" cy="80"/>
+
+                            </svg>
+
+                            <div class="calorie-text">
+
+                                <span class="calorie-number" id="daséries-eaten">0</span>
+
+                                <span class="calorie-divider">/</span>
+
+                                <span class="calorie-target" id="daséries-target">2400</span>
+
+                                <span class="calorie-label">kcal consumidas</span>
+
+                            </div>
+
+                        </div>
+
+                        
+
+                        <div class="macro-bars">
+
+                            <div class="macro-bar-item">
+
+                                <div class="macro-bar-header">
+
+                                    <span>🥩 Proteínas</span>
+
+                                    <span id="dash-macro-protein-txt">0/150g</span>
+
+                                </div>
+
+                                <div class="macro-progress-bg">
+
+                                    <div id="dash-macro-protein-bar" class="macro-progress-fill protein" style="width: 0%;"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="macro-bar-item">
+
+                                <div class="macro-bar-header">
+
+                                    <span>🍚 Carboidratos</span>
+
+                                    <span id="dash-macro-carbs-txt">0/240g</span>
+
+                                </div>
+
+                                <div class="macro-progress-bg">
+
+                                    <div id="dash-macro-carbs-bar" class="macro-progress-fill carbs" style="width: 0%;"></div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="macro-bar-item">
+
+                                <div class="macro-bar-header">
+
+                                    <span>🥑 Gorduras</span>
+
+                                    <span id="dash-macro-fats-txt">0/70g</span>
+
+                                </div>
+
+                                <div class="macro-progress-bg">
+
+                                    <div id="dash-macro-fats-bar" class="macro-progress-fill fats" style="width: 0%;"></div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Card de Estimativa de Progresso -->
+
+                    <div class="progress-card card" id="progress-card-container">
+
+                        <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+
+                            <i data-lucide="target" style="width:24px;height:24px;color:var(--accent);"></i>
+
+                            <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.05rem;">Estimativa de Progresso</h3>
+
+                        </div>
+
+                        <div class="stats-grid">
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Pãor Semana</span>
+
+                                <span class="stat-value" id="progress-weekly" style="font-size:0.9rem;">-</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Pãor Mês</span>
+
+                                <span class="stat-value" id="progress-monthly" style="font-size:0.9rem;">-</span>
+
+                            </div>
+
+                            <div class="stat-item" style="grid-column:1/-1;">
+
+                                <span class="stat-label">Tempo Estimado</span>
+
+                                <span class="stat-value" id="progress-timeline" style="font-size:0.9rem;">-</span>
+
+                            </div>
+
+                        </div>
+
+                        <p id="progress-disclaimer" style="font-size:0.7rem;color:var(--text-muted);margin-top:10px;font-style:italic;"></p>
+
+                    </div>
+
+
+
+                    <!-- Grid de Widgets: Água e Checklist -->
+
+                    <div class="widgets-grid">
+
+                        
+
+                        <!-- Widget de Água -->
+
+                        <div class="widget-card card water-widget">
+
+                            <h3>💧 Hidratação</h3>
+
+                            <div class="water-progress-container">
+
+                                <div class="water-glass-display">
+
+                                    <div class="wave-container">
+
+                                        <div id="water-wave" class="wave" style="bottom: 0%;"></div>
+
+                                    </div>
+
+                                    <span id="water-amount-txt">0 ml</span>
+
+                                </div>
+
+                                <div class="water-controls">
+
+                                    <button class="btn btn-icon btn-water-add" onclick="addWater(250)">
+
+                                        <i data-lucide="plus"></i> 250ml
+
+                                    </button>
+
+                                    <button class="btn btn-icon btn-water-add" onclick="addWater(500)">
+
+                                        <i data-lucide="plus"></i> 500ml
+
+                                    </button>
+
+                                    <button class="btn btn-icon btn-water-reset" onclick="resetWater()" title="Zerar Água">
+
+                                        <i data-lucide="rotate-ccw"></i>
+
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                            <span class="water-target-txt">Meta: <strong id="water-target-val">3000</strong> ml</span>
+
+                        </div>
+
+
+
+                        <!-- Widget de Checklist Diário -->
+
+                        <div class="widget-card card checklist-widget">
+
+                            <h3>🚀 Missões do Dia</h3>
+
+                            <ul class="checklist-items">
+
+                                <li>
+
+                                    <label class="checkbox-container">
+
+                                        <input type="checkbox" id="chk-diet">
+
+                                        <span class="checkmark"></span>
+
+                                        <span>Seguir a Dieta Planejada</span>
+
+                                    </label>
+
+                                </li>
+
+                                <li>
+
+                                    <label class="checkbox-container">
+
+                                        <input type="checkbox" id="chk-workout">
+
+                                        <span class="checkmark"></span>
+
+                                        <span>Completar o Treino do Dia</span>
+
+                                    </label>
+
+                                </li>
+
+                                <li>
+
+                                    <label class="checkbox-container">
+
+                                        <input type="checkbox" id="chk-water">
+
+                                        <span class="checkmark"></span>
+
+                                        <span>Bater a Meta de Água</span>
+
+                                    </label>
+
+                                </li>
+
+                                <li>
+
+                                    <label class="checkbox-container">
+
+                                        <input type="checkbox" id="chk-sleep">
+
+                                        <span class="checkmark"></span>
+
+                                        <span>Dormir 7-8 horas</span>
+
+                                    </label>
+
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+
+
+                        <!-- Dicas do Dia -->
+
+                        <div class="tips-card" id="tips-container">
+
+                            <div style="display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border-color);">
+
+                                <i data-lucide="lightbulb" style="width:20px;height:20px;color:var(--accent);"></i>
+
+                                <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1rem;">💡 Dicas para Você</h3>
+
+                            </div>
+
+                            <!-- Tips are rendered dynamically by JS -->
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ABA 2: TREINO -->
+
+                <section id="tab-workout" class="tab-content">
+
+                    <div class="workout-header">
+
+                        <h2>Ficha de Treino Semanal</h2>
+
+                        <p class="workout-goal-desc" id="workout-goal-desc">Hipertrofia - Divisão ABC</p>
+
+                    </div>
+
+
+
+                    <!-- Seletor de Dia da Semana -->
+
+                    <div class="day-selector-container">
+
+                        <div class="day-selector">
+
+                            <button class="day-btn active" data-day="0">Seg</button>
+
+                            <button class="day-btn" data-day="1">Ter</button>
+
+                            <button class="day-btn" data-day="2">Qua</button>
+
+                            <button class="day-btn" data-day="3">Qui</button>
+
+                            <button class="day-btn" data-day="4">Sex</button>
+
+                            <button class="day-btn" data-day="5">Sáb</button>
+
+                            <button class="day-btn" data-day="6">Dom</button>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Detalhes do Treino do Dia Selecionado -->
+
+                    <div id="workout-day-details" class="card workout-day-card">
+
+                        <div class="workout-day-title-box">
+
+                            <h3 id="workout-day-name">Treino A - Peito, Ombros e Tríceps</h3>
+
+                            <span class="workout-badge" id="workout-day-tag">Hipertrofia</span>
+
+                        </div>
+
+
+
+                        <!-- Lista de Exercícios -->
+
+                        <div class="exercises-list" id="exercises-container">
+
+                            <!-- Gerado dinamicamente via JS -->
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ABA 3: DIETA -->
+
+                <section id="tab-diet" class="tab-content">
+
+                    <div class="diet-header">
+
+                        <h2>Cardápio Personalizado</h2>
+                        <button id="btn-export-pdf" class="btn btn-secondary btn-icon"><i data-lucide="download"></i> Baixar PDF</button>
+
+                        <div class="diet-summary-pills">
+
+                            <span class="pill"><i data-lucide="flame"></i> <span id="diet-pill-cal">2400</span> kcal</span>
+
+                            <span class="pill"><i data-lucide="beef"></i> P: <span id="diet-pill-prot">150</span>g</span>
+
+                            <span class="pill"><i data-lucide="wheat"></i> C: <span id="diet-pill-carb">240</span>g</span>
+
+                            <span class="pill"><i data-lucide="droplet"></i> G: <span id="diet-pill-fat">70</span>g</span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Informações Educativas sobre Macros -->
+
+                    <button id="btn-grocery-list" class="btn btn-primary btn-block" style="margin-bottom: 16px;"><i data-lucide="shopping-cart"></i> Gerar Lista de Compras</button>
+
+                    <div class="info-section">
+
+                        <div class="info-card">
+
+                            <div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;" onclick="this.parentElement.classList.toggle('expanded')">
+
+                                <i data-lucide="book-open" style="width:18px;height:18px;color:var(--accent);"></i>
+
+                                <span style="font-family:var(--font-heading);font-weight:700;font-size:0.9rem;">📚 Entenda seus Macronutrientes</span>
+
+                                <i data-lucide="chevron-down" style="width:16px;height:16px;margin-left:auto;color:var(--text-muted);"></i>
+
+                            </div>
+
+                            <div class="exercise-collapse">
+
+                                <div style="padding:0 16px 16px 16px;font-size:0.8rem;color:var(--text-secondary);line-height:1.6;">
+
+                                    <p><strong style="color:var(--color-protein);">🥩 Proteínas (4 kcal/g):</strong> Essenciais para reparação e crescimento muscular. Consuma distribuídas ao longo do dia.</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--color-carbs);">🍚 Carboidratos (4 kcal/g):</strong> Principal fonte de energia para treinos intensos. Priorize fontes complexas (arroz integral, batata doce, aveia).</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--color-fats);">🥑 Gorduras (9 kcal/g):</strong> Fundamentais para produção hormonal (testosterona). Fontes: azeite, abacate, castanhas, peixes.</p>
+                                    <p style="margin-top:8px;"><strong style="color:var(--accent);">💧 Água:</strong> Beba pelo menos 35ml por kg de peso corporal. A hidratação impacta diretamente na performance e recuperação.</p>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Lista de Refeições -->
+
+                    <div class="meals-list" id="meals-container">
+
+                        <!-- Gerado dinamicamente via JS -->
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- ABA 4: PERFIL -->
+
+                <section id="tab-profile" class="tab-content">
+
+                    <div class="profile-header-card" style="background: var(--bg-card); padding: 24px; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 20px;">
+
+                        <div style="position: relative;">
+
+                            <img id="profile-avatar-img" src="https://ui-avatars.com/api/?name=User&background=d2ff00&color=000" alt="Avatar" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent);">
+
+                            <label for="profile-pic-upload" style="position: absolute; bottom: -5px; right: -5px; background: var(--bg-secondary); padding: 6px; border-radius: 50%; border: 1px solid var(--border-color); cursor: pointer;">
+
+                                <i data-lucide="camera" style="width: 16px; height: 16px; color: var(--text-primary);"></i>
+
+                            </label>
+
+                            <input type="file" id="profile-pic-upload" accept="image/*" style="display: none;">
+
+                        </div>
+
+                        <div>
+
+                            <h2 style="font-family: var(--font-heading);" id="profile-display-name">Usuário</h2>
+                            <p style="color: var(--text-secondary);" id="profile-user-email">email@exemplo.com</p>
+
+                        </div>
+
+                    </div>
+
+                    
+
+                    <div class="info-card" style="margin-bottom: 24px;">
+
+                        <h3><i data-lucide="line-chart"></i> Evolução de Peso</h3>
+
+                        <canvas id="weight-chart" width="400" height="200" style="margin-bottom: 24px;"></canvas>
+
+                        
+
+                        <h4>Atualizar Medidas (Opcional)</h4>
+
+                        <div class="measurement-grid" style="margin-top: 16px;">
+
+                            <div class="form-group"><label>Peso Atual</label><input type="number" id="meas-weight" required></div>
+
+                            <div class="form-group"><label>Braço</label><input type="number" id="meas-arm"></div>
+
+                            <div class="form-group"><label>Perna</label><input type="number" id="meas-leg"></div>
+
+                            <div class="form-group"><label>Quadril</label><input type="number" id="meas-hip"></div>
+
+                            <div class="form-group"><label>Cintura</label><input type="number" id="meas-waist"></div>
+
+                        </div>
+
+                        <button class="btn btn-accent btn-block" id="btn-save-measurements" style="margin-top: 16px;">Salvar Medidas da Semana</button>
+
+                    </div>
+
+
+
+                    <div class="info-card" style="margin-bottom: 24px;">
+
+                        <h3><i data-lucide="lock"></i> Segurança da Conta</h3>
+
+                        <div class="measurement-grid" style="margin-top: 16px;">
+
+                            <div class="form-group">
+
+                                <label>Nova Senha</label>
+
+                                <input type="password" id="input-new-password" placeholder="Mínimo 6 caracteres">
+                            </div>
+
+                        </div>
+
+                        <button class="btn btn-secondary btn-block" style="margin-top: 16px;" id="btn-change-password">Alterar Senha</button>
+
+                    </div>
+
+
+
+                    <!-- Dados Fisiológicos Calculados -->
+
+                    <div class="profile-stats card">
+
+                        <h3>Métricas Fisiológicas</h3>
+
+                        <div class="stats-grid">
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Peso</span>
+
+                                <span class="stat-value" id="prof-weight">78 kg</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Altura</span>
+
+                                <span class="stat-value" id="prof-height">178 cm</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Taxa Basal (BMR)</span>
+
+                                <span class="stat-value" id="prof-bmr">1750 kcal</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Gasto Diário (TDEE)</span>
+
+                                <span class="stat-value" id="prof-tdee">2600 kcal</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">IMC</span>
+
+                                <span class="stat-value" id="prof-bmi">24.6</span>
+
+                            </div>
+
+                            <div class="stat-item">
+
+                                <span class="stat-label">Classificação</span>
+
+                                <span class="stat-value" id="prof-bmi-class">Normal</span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- Suplementação Sugerida -->
+
+                    <div class="card" id="supplements-card">
+
+                        <h3 style="font-family:var(--font-heading);font-weight:700;font-size:1.1rem;margin-bottom:16px;">💊 Suplementação Sugerida</h3>
+
+                        <div class="supplements-section" id="supplements-container">
+
+                            <!-- Gerado dinamicamente via JS -->
+
+                        </div>
+
+                        <p style="font-size:0.7rem;color:var(--text-muted);font-style:italic;">⚠️ Consulte um nutricionista antes de iniciar qualquer suplementação.</p>
+
+                    </div>
+
+
+
+
+
+                    <!-- Configurações e Reinício -->
+
+                    <div class="profile-actions card">
+
+                        <h3>Ações da Conta</h3>
+
+                        <p class="settings-desc">Se você mudou de peso ou quer alterar o seu objetivo, clique abaixo para gerar um novo plano.</p>
+
+                        <button id="btn-reset-plan" class="btn btn-danger btn-block" style="margin-bottom:10px;">
+
+                            <i data-lucide="refresh-cw"></i> Redefinir Dados e Plano
+
+                        </button>
+
+                        <button id="btn-logout" class="btn-logout" onclick="handleLogout()" style="display:none;">
+
+                            <i data-lucide="log-out" style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;"></i> Sair da Conta
+
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+
+            </main>
+
+
+
+            <!-- BARRA DE NAVEGAÇÃO INFERIOR (BOTTOM NAV) -->
+
+            <nav class="bottom-nav">
+
+                <button class="nav-item active" data-tab="dashboard">
+
+                    <i data-lucide="layout-dashboard"></i>
+
+                    <span>Painel</span>
+
+                </button>
+
+                <button class="nav-item" data-tab="workout">
+
+                    <i data-lucide="dumbbell"></i>
+
+                    <span>Treino</span>
+
+                </button>
+
+                <button class="nav-item" data-tab="diet">
+
+                    <i data-lucide="utensils"></i>
+
+                    <span>Dieta</span>
+
+                </button>
+
+                <button class="nav-item" data-tab="profile">
+
+                    <i data-lucide="user"></i>
+
+                    <span>Perfil</span>
+
+                </button>
+
+            </nav>
+
+
+
+        </div>
+
+
+
+        <!-- REST TIMER OVERLAY -->
+
+        <div id="rest-timer-overlay" class="rest-timer-overlay" style="display:none;">
+
+            <div class="rest-timer-circle">
+
+                <span class="rest-timer-text" id="rest-timer-display">60</span>
+
+            </div>
+
+            <p style="color:var(--text-secondary);margin-bottom:20px;font-family:var(--font-heading);font-weight:700;">Descanso entre séries</p>
+            <button class="btn btn-accent" onclick="stopRestTimer()" style="min-width:180px;">
+
+                <i data-lucide="x"></i> Pular Descanso
+
+            </button>
+
+        </div>
+
+
+
+    </div>
+
+
+
+    <!-- MODALS -->
+
+    <div id="grocery-modal" class="modal-overlay" style="display:none;">
+
+        <div class="modal-box"></div>
+
+    </div>
+
+    <div id="swap-modal" class="modal-overlay" style="display:none;">
+
+        <div class="modal-box"></div>
+
+    </div>
+
+
+
+    <!-- JS Link -->
+
+    <script src="/static/js/app.js"></script>
+
+</body>
+
+</html>
+
