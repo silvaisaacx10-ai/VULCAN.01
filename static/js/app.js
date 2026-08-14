@@ -87,6 +87,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const data = await resp.json();
                 if (data.plan) {
                     appState.plan = data.plan;
+                    if (data.time_spent !== undefined) {
+                        appState.time_spent = data.time_spent;
+                    }
                     checkDailyReset();
                     saveStateToStorage();
                     renderApp();
@@ -278,25 +281,31 @@ async function handleLogin(e) {
         authState = { isLoggedIn: true, email: email, token: data.token, name: data.name };
         saveAuthState();
         
-        // Try load plan
-        const planResp = await fetch('/api/user/load-plan', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: authState.email })
-        });
-        
-        if (planResp.ok) {
-            const planData = await planResp.json();
-            if (planData.plan) {
-                appState.plan = planData.plan;
-                checkDailyReset();
-                saveStateToStorage();
-                renderApp();
-                if(loginScreen) loginScreen.classList.remove('active');
-                if(mainScreen) mainScreen.classList.add('active');
-                return;
+        // Tentar carregar plano
+        try {
+            const planResp = await fetch('/api/user/load-plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            if(planResp.ok) {
+                const planData = await planResp.json();
+                if (planData.plan) {
+                    appState.plan = planData.plan;
+                    if (planData.time_spent !== undefined) {
+                        appState.time_spent = planData.time_spent;
+                    }
+                    checkDailyReset();
+                    saveStateToStorage();
+                    renderApp();
+                    if(loginScreen) loginScreen.classList.remove('active');
+                    if(mainScreen) mainScreen.classList.add('active');
+                    return;
+                }
+            } else if (planResp.status === 403) {
+                throw new Error('Acesso bloqueado pelo administrador.');
             }
-        }
+        } catch (err) { }
         
         if(loginScreen) loginScreen.classList.remove('active');
         if(onboardingScreen) onboardingScreen.classList.add('active');

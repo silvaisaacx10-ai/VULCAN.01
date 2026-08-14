@@ -1,6 +1,7 @@
 import os
 import hashlib
 import uuid
+from datetime import datetime, timezone
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client
 
@@ -93,15 +94,15 @@ def save_plan():
         return jsonify({'error': 'Faltam dados'}), 400
     
     update_data = {}
-    if plan is not None:
-        update_data['plan'] = plan
-    if progress_history is not None:
-        update_data['progressHistory'] = progress_history
-    if streak is not None:
-        update_data['streak'] = streak
-    if time_spent is not None:
-        update_data['time_spent'] = time_spent
-        
+    update_data = {
+        'last_active': datetime.now(timezone.utc).isoformat()
+    }
+    
+    if plan: update_data['plan'] = plan
+    if progress_history is not None: update_data['progressHistory'] = progress_history
+    if streak is not None: update_data['streak'] = streak
+    if time_spent is not None: update_data['time_spent'] = time_spent
+    
     try:
         supabase.table('vulcan_users').update(update_data).eq('email', email).execute()
         return jsonify({'message': 'Plano salvo com sucesso'}), 200
@@ -119,7 +120,7 @@ def load_plan():
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
     
-    response = supabase.table('vulcan_users').select('plan, progressHistory, streak, is_blocked').eq('email', email).execute()
+    response = supabase.table('vulcan_users').select('plan, progressHistory, streak, is_blocked, time_spent').eq('email', email).execute()
     if len(response.data) == 0:
         return jsonify({'error': 'Nenhum plano encontrado'}), 404
         
@@ -153,7 +154,7 @@ def admin_users():
     if email not in valid_admins or valid_admins[email] != password:
         return jsonify({'error': 'Não autorizado'}), 401
         
-    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked, blocked_by').order('created_at', desc=True).execute()
+    response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked, blocked_by, last_active').order('created_at', desc=True).execute()
     users_list = response.data
         
     return jsonify({'users': users_list}), 200
