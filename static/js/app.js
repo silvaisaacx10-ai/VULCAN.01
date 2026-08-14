@@ -4,7 +4,7 @@ let appState = {
     daily: {
         date: "",
         water: 0,
-        eatenMeals: [], // Lista de índices das refeições consumidas
+        eatenMeals: [], // Lista de ﾃｭndices das refeiﾃｧﾃｵes consumidas
         completedExercises: {}, // Mapeia { "dia_da_semana": [indices_exercicios] }
         checklist: {
             diet: false,
@@ -23,7 +23,7 @@ let authState = {
     name: ''
 };
 
-// Configurações do Círculo de Progresso
+// Configuraﾃｧﾃｵes do Cﾃｭrculo de Progresso
 const CIRCLE_RADIUS = 70;
 const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
 
@@ -31,7 +31,7 @@ const CIRCLE_CIRCUMFERENCE = 2 * Math.PI * CIRCLE_RADIUS;
 let loginScreen, onboardingScreen, loadingScreen, mainScreen;
 let profileForm, loadingMessage, btnSubmitWizard, btnResetPlan;
 
-// INICIALIZAÇÃO DO APP
+// INICIALIZAﾃ�グ DO APP
 document.addEventListener('DOMContentLoaded', async () => {
     // Pegar elementos globais
     loginScreen = document.getElementById('login-screen');
@@ -46,23 +46,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Inicializar Lucide Icons
     lucide.createIcons();
 
-    // Configurar o progresso do círculo
+    // Configurar o progresso do cﾃｭrculo
     const progressCircle = document.getElementById('calorie-progress-circle');
     if (progressCircle) {
         progressCircle.style.strokeDasharray = `${CIRCLE_CIRCUMFERENCE} ${CIRCLE_CIRCUMFERENCE}`;
         progressCircle.style.strokeDashoffset = CIRCLE_CIRCUMFERENCE;
     }
 
-    // Configurar navegação do Wizard
+    // Configurar navegaﾃｧﾃ｣o do Wizard
     setupWizard();
 
-    // Configurar navegação entre abas
+    // Configurar navegaﾃｧﾃ｣o entre abas
     setupTabs();
 
     // Configurar Auth Tabs
     setupAuthTabs();
 
-    // Configurar botões extras
+    // Configurar botﾃｵes extras
     if (btnResetPlan) {
         btnResetPlan.addEventListener('click', resetAllData);
     }
@@ -71,10 +71,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         logoutBtn.addEventListener('click', handleLogout);
     }
 
-    // Carregar estado de autenticação
+    // Carregar estado de autenticaﾃｧﾃ｣o
     loadAuthState();
 
-    // Iniciar cronômetro de navegação (salva a cada 1 minuto)
+    // Iniciar cronﾃｴmetro de navegaﾃｧﾃ｣o (salva a cada 1 minuto)
     setInterval(() => {
         if (appState && appState.plan) {
             appState.time_spent = (appState.time_spent || 0) + 60;
@@ -116,6 +116,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (data.time_spent !== undefined) {
                         appState.time_spent = data.time_spent;
                     }
+                    if (data.profile_pic !== undefined) {
+                        appState.profile_pic = data.profile_pic;
+                    }
                     checkDailyReset();
                     saveStateToStorage();
                     renderApp();
@@ -125,7 +128,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
             } else if (resp.status === 403) {
-                // Usuário foi bloqueado
+                // Usuﾃ｡rio foi bloqueado
                 localStorage.removeItem('shredded_auth_state');
                 localStorage.removeItem('shredded_app_state');
                 authState.isLoggedIn = false;
@@ -138,12 +141,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (e) {
             console.error("Erro ao carregar plano:", e);
         }
-        // Se não conseguiu ou não tem plano, vai pro onboarding
+        // Se nﾃ｣o conseguiu ou nﾃ｣o tem plano, vai pro onboarding
         if(loginScreen) loginScreen.classList.remove('active');
         if(mainScreen) mainScreen.classList.remove('active');
         if(onboardingScreen) onboardingScreen.classList.add('active');
     } else {
-        // Se não está logado, verifica localStorage
+        // Se nﾃ｣o estﾃ｡ logado, verifica localStorage
         const savedState = localStorage.getItem('shredded_app_state');
         if (savedState) {
             const parsed = JSON.parse(savedState);
@@ -223,7 +226,7 @@ function resetAllData() {
 }
 
 // ========================================================
-// AUTENTICAÇÃO
+// AUTENTICAﾃ�グ
 // ========================================================
 function setupAuthTabs() {
     const tabs = document.querySelectorAll('[data-auth-tab]');
@@ -311,7 +314,7 @@ async function handleLogin(e) {
         if(onboardingScreen) onboardingScreen.classList.add('active');
         
     } catch(err) {
-        showToast('Erro de conexão', 'error');
+        showToast('Erro de conexﾃ｣o', 'error');
     }
 }
 
@@ -349,7 +352,7 @@ async function handleRegister(e) {
         await handleLogin();
         
     } catch(err) {
-        showToast('Erro de conexão', 'error');
+        showToast('Erro de conexﾃ｣o', 'error');
     }
 }
 
@@ -401,7 +404,7 @@ function hideToast() {
 }
 
 // ========================================================
-// VALIDAÇÃO FRONTEND
+// VALIDAﾃ�グ FRONTEND
 // ========================================================
 function validateFormData(name, age, weight, height) {
     let valid = true;
@@ -433,7 +436,7 @@ function validateFormData(name, age, weight, height) {
     const heightM = height / 100;
     const bmi = weight / (heightM * heightM);
     if(bmi < 12 || bmi > 60) {
-        showToast('Valores de peso/altura parecem inválidos.', 'error');
+        showToast('Valores de peso/altura parecem invﾃ｡lidos.', 'error');
         return false;
     }
     
@@ -441,7 +444,7 @@ function validateFormData(name, age, weight, height) {
 }
 
 // ========================================================
-// LÓGICA DO ONBOARDING / WIZARD (FORMULÁRIO MULTI-ETAPAS)
+// Lﾃ敵ICA DO ONBOARDING / WIZARD (FORMULﾃヽIO MULTI-ETAPAS)
 // ========================================================
 function setupWizard() {
     const steps = document.querySelectorAll('.wizard-step');
@@ -500,9 +503,9 @@ function setupWizard() {
     }
 }
 
-// SUBMISSÃO DO FORMULÁRIO DE ONBOARDING PARA O BACKEND
+// SUBMISSﾃグ DO FORMULﾃヽIO DE ONBOARDING PARA O BACKEND
 async function submitOnboardingForm() {
-    // Coleta dos dados do formulário
+    // Coleta dos dados do formulﾃ｡rio
     const name = document.getElementById('input-name').value;
     const age = parseInt(document.getElementById('input-age').value);
     const gender = document.querySelector('input[name="gender"]:checked')?.value || 'm';
@@ -511,22 +514,24 @@ async function submitOnboardingForm() {
     const activity = document.getElementById('input-activity').value;
     const goal = document.querySelector('input[name="goal"]:checked')?.value || 'maintain';
     const dietPreference = document.querySelector('input[name="diet_preference"]:checked')?.value || 'omnivore';
+    const chkEconomic = document.getElementById('chk-economic-diet');
+    const economicDiet = chkEconomic ? chkEconomic.checked : false;
 
     if(!validateFormData(name, age, weight, height)) {
         return;
     }
 
-    // Transição de tela: Onboarding -> Loading
+    // Transiﾃｧﾃ｣o de tela: Onboarding -> Loading
     if(onboardingScreen) onboardingScreen.classList.remove('active');
     if(loadingScreen) loadingScreen.classList.add('active');
 
     // Mensagens de carregamento simuladas
     const messages = [
-        "Calculando sua taxa metabólica basal (BMR)...",
-        "Ajustando gasto calórico diário (TDEE)...",
+        "Calculando sua taxa metabﾃｳlica basal (BMR)...",
+        "Ajustando gasto calﾃｳrico diﾃ｡rio (TDEE)...",
         "Dividindo seus macronutrientes sob medida...",
         "Montando sua rotina semanal de treinos...",
-        "Calculando porções da dieta..."
+        "Calculando porﾃｧﾃｵes da dieta..."
     ];
     let msgIdx = 0;
     const msgInterval = setInterval(() => {
@@ -548,7 +553,8 @@ async function submitOnboardingForm() {
                 age,
                 activity_level: activity,
                 goal,
-                diet_preference: dietPreference
+                diet_preference: dietPreference,
+                economic_diet: economicDiet
             })
         });
 
@@ -581,7 +587,7 @@ async function submitOnboardingForm() {
 
         saveStateToStorage();
 
-        // Parar animação e ir para o Dashboard
+        // Parar animaﾃｧﾃ｣o e ir para o Dashboard
         clearInterval(msgInterval);
         
         // Efeito Confete de sucesso
@@ -614,8 +620,13 @@ function renderApp() {
     const dUserName = document.getElementById('display-user-name');
     if(dUserName) dUserName.textContent = plan.user.name;
     
-    const pUserName = document.getElementById('profile-user-name');
+    const pUserName = document.getElementById('profile-display-name');
     if(pUserName) pUserName.textContent = plan.user.name;
+    
+    if (appState.profile_pic) {
+        const avatar = document.getElementById('profile-avatar-img');
+        if(avatar) avatar.src = appState.profile_pic;
+    }
     
     const pUserEmail = document.getElementById('profile-user-email');
     if(pUserEmail) {
@@ -631,8 +642,8 @@ function renderApp() {
         btnLogout.style.display = authState.isLoggedIn ? 'block' : 'none';
     }
     
-    let goalText = "Objetivo: Manutenção / Definição";
-    if (plan.user.goal === 'lose') goalText = "Foco: Perda de Peso / Definição";
+    let goalText = "Objetivo: Manutenﾃｧﾃ｣o / Definiﾃｧﾃ｣o";
+    if (plan.user.goal === 'lose') goalText = "Foco: Perda de Peso / Definiﾃｧﾃ｣o";
     else if (plan.user.goal === 'gain') goalText = "Foco: Ganho de Massa / Hipertrofia";
     
     const pUserGoal = document.getElementById('profile-user-goal');
@@ -641,7 +652,7 @@ function renderApp() {
     const wGoalDesc = document.getElementById('workout-goal-desc');
     if(wGoalDesc) wGoalDesc.textContent = goalText + ` (${(plan.user.diet_preference || '').toUpperCase()})`;
 
-    // 2. Renderizar Estatísticas de Perfil e BMI
+    // 2. Renderizar Estatﾃｭsticas de Perfil e BMI
     const pWeight = document.getElementById('prof-weight');
     if(pWeight) pWeight.textContent = `${plan.user.weight} kg`;
     
@@ -703,7 +714,7 @@ function renderApp() {
     const dpFat = document.getElementById('diet-pill-fat');
     if(dpFat) dpFat.textContent = plan.nutrition.fats;
 
-    // Meta de água padrão
+    // Meta de ﾃ｡gua padrﾃ｣o
     const waterTarget = plan.water_target || Math.round(plan.user.weight * 35);
     const wtVal = document.getElementById('water-target-val');
     if(wtVal) wtVal.textContent = waterTarget;
@@ -715,7 +726,7 @@ function renderApp() {
     renderSupplements();
     renderProgress();
 
-    // 5. Atualizar Dashboard (Calorias, Macros, Água, Checklist)
+    // 5. Atualizar Dashboard (Calorias, Macros, ﾃ“ua, Checklist)
     updateDashboardVisuals();
 }
 
@@ -807,7 +818,7 @@ function updateDashboardVisuals() {
         }
     });
 
-    // Atualizar números de Calorias
+    // Atualizar nﾃｺmeros de Calorias
     const dCeaten = document.getElementById('dash-calories-eaten');
     if(dCeaten) dCeaten.textContent = Math.round(eatenCal);
 
@@ -818,7 +829,7 @@ function updateDashboardVisuals() {
         const offset = CIRCLE_CIRCUMFERENCE - (pctCal * CIRCLE_CIRCUMFERENCE);
         progressCircle.style.strokeDashoffset = offset;
 
-        // Mudar cor do círculo caso ultrapasse as calorias
+        // Mudar cor do cﾃｭrculo caso ultrapasse as calorias
         if (eatenCal > nutrition.target_calories && appState.plan.user.goal === 'lose') {
             progressCircle.style.stroke = '#ff4757'; // Vermelho se furar a dieta de corte
         } else {
@@ -831,7 +842,7 @@ function updateDashboardVisuals() {
     updateMacroBar('carbs', eatenCarb, nutrition.carbs);
     updateMacroBar('fats', eatenFat, nutrition.fats);
 
-    // Atualizar visualizador de Água
+    // Atualizar visualizador de ﾃ“ua
     const waterTarget = appState.plan.water_target || Math.round(appState.plan.user.weight * 35);
     const wAmt = document.getElementById('water-amount-txt');
     if(wAmt) wAmt.textContent = `${appState.daily.water} ml`;
@@ -842,7 +853,7 @@ function updateDashboardVisuals() {
         wWave.style.bottom = `calc(${waterPct}% - 100px)`;
     }
 
-    // Se bateu meta de água, marca na checklist
+    // Se bateu meta de ﾃ｡gua, marca na checklist
     appState.daily.checklist.water = (appState.daily.water >= waterTarget);
     const chkWater = document.getElementById('chk-water');
     if(chkWater) chkWater.checked = appState.daily.checklist.water;
@@ -852,7 +863,7 @@ function updateDashboardVisuals() {
     const chkDiet = document.getElementById('chk-diet');
     if(chkDiet) chkDiet.checked = appState.daily.checklist.diet;
 
-    // Atualizar Checkboxes da Checklist Diária
+    // Atualizar Checkboxes da Checklist Diﾃ｡ria
     const chkWorkout = document.getElementById('chk-workout');
     if(chkWorkout) chkWorkout.checked = appState.daily.checklist.workout;
     
@@ -896,7 +907,7 @@ function setupChecklistListeners() {
 }
 
 // ========================================================
-// HIDRATAÇÃO (RASTREADOR DE ÁGUA)
+// HIDRATAﾃ�グ (RASTREADOR DE ﾃ；UA)
 // ========================================================
 function addWater(amount) {
     if (!appState.plan) return;
@@ -924,7 +935,7 @@ function resetWater() {
 }
 
 // ========================================================
-// GERADOR E AÇÕES DA ABA: DIETA
+// GERADOR E Aﾃ�髭S DA ABA: DIETA
 // ========================================================
 function renderDietTab() {
     const mealsContainer = document.getElementById('meals-container');
@@ -975,7 +986,7 @@ function renderDietTab() {
         mealsContainer.appendChild(card);
     });
 
-    // Registrar eventos dos checkboxes de refeição
+    // Registrar eventos dos checkboxes de refeiﾃｧﾃ｣o
     const mealCheckboxes = document.querySelectorAll('.chk-meal-eaten');
     mealCheckboxes.forEach(chk => {
         chk.addEventListener('change', (e) => {
@@ -991,7 +1002,7 @@ function renderDietTab() {
             saveStateToStorage();
             updateDashboardVisuals();
             
-            // Efeito confete se todas refeições foram consumidas
+            // Efeito confete se todas refeiﾃｧﾃｵes foram consumidas
             if (appState.daily.eatenMeals.length === appState.plan.diet_plan.length) {
                 triggerConfetti();
                 appState.daily.checklist.diet = true;
@@ -1004,7 +1015,7 @@ function renderDietTab() {
 }
 
 // ========================================================
-// GERADOR E AÇÕES DA ABA: TREINO
+// GERADOR E Aﾃ�髭S DA ABA: TREINO
 // ========================================================
 function renderWorkoutTab() {
     const dayButtons = document.querySelectorAll('.day-btn');
@@ -1014,7 +1025,7 @@ function renderWorkoutTab() {
     let todayIdx = new Date().getDay();
     let apiDayIdx = todayIdx === 0 ? 6 : todayIdx - 1; // Converter para Seg=0 ... Dom=6
 
-    // Selecionar o dia do calendário
+    // Selecionar o dia do calendﾃ｡rio
     dayButtons.forEach(btn => {
         const dayVal = parseInt(btn.getAttribute('data-day'));
         if (dayVal === apiDayIdx) {
@@ -1052,12 +1063,12 @@ function renderWorkoutDay(dayIdx) {
         exercisesContainer.innerHTML = `
             <div style="text-align: center; padding: 30px 10px; color: var(--text-secondary);">
                 <i data-lucide="coffee" style="width: 48px; height: 48px; margin-bottom: 12px; color: var(--accent);"></i>
-                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #fff; margin-bottom: 4px;">Dia de Recuperação</h4>
-                <p style="font-size: 0.85rem;">Seu corpo cresce no descanso! Siga a alimentação e aproveite para recuperar as fibras musculares hoje.</p>
+                <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #fff; margin-bottom: 4px;">Dia de Recuperaﾃｧﾃ｣o</h4>
+                <p style="font-size: 0.85rem;">Seu corpo cresce no descanso! Siga a alimentaﾃｧﾃ｣o e aproveite para recuperar as fibras musculares hoje.</p>
             </div>
         `;
         
-        // Registrar conclusão automática de descanso
+        // Registrar conclusﾃ｣o automﾃ｡tica de descanso
         appState.daily.checklist.workout = true;
         const cWork = document.getElementById('chk-workout');
         if(cWork) cWork.checked = true;
@@ -1066,7 +1077,7 @@ function renderWorkoutDay(dayIdx) {
         return;
     }
 
-    // Carregar exercícios concluídos para este dia
+    // Carregar exercﾃｭcios concluﾃｭdos para este dia
     const completedIdxs = appState.daily.completedExercises[dayIdx] || [];
 
     workoutDay.exercises.forEach((ex, exIdx) => {
@@ -1090,7 +1101,7 @@ function renderWorkoutDay(dayIdx) {
                     <span class="exercise-target-badge">${ex.focus || ''}</span>
                     <h4 class="exercise-name">${ex.name}</h4>
                     <div class="exercise-meta">
-                        <span><i data-lucide="layers"></i> ${ex.sets} séries</span>
+                        <span><i data-lucide="layers"></i> ${ex.sets} sﾃｩries</span>
                         <span><i data-lucide="hash"></i> ${ex.reps} reps</span>
                         <span><i data-lucide="clock"></i> ${ex.rest}</span>
                     </div>
@@ -1105,14 +1116,14 @@ function renderWorkoutDay(dayIdx) {
                 </div>
             </div>
             <div class="exercise-collapse">
-                <strong>Instruções de Execução:</strong>
-                <p style="margin-top: 4px;">${ex.notes || 'Sem instruções adicionais.'}</p>
+                <strong>Instruﾃｧﾃｵes de Execuﾃｧﾃ｣o:</strong>
+                <p style="margin-top: 4px;">${ex.notes || 'Sem instruﾃｧﾃｵes adicionais.'}</p>
             </div>
         `;
         exercisesContainer.appendChild(card);
     });
 
-    // Configurar listeners para checkboxes de exercícios
+    // Configurar listeners para checkboxes de exercﾃｭcios
     const exerciseCheckboxes = document.querySelectorAll('.chk-exercise-done');
     exerciseCheckboxes.forEach(chk => {
         chk.addEventListener('change', (e) => {
@@ -1209,7 +1220,7 @@ function formatTime(sec) {
 }
 
 // ========================================================
-// NAVEGAÇÃO DE ABAS
+// NAVEGAﾃ�グ DE ABAS
 // ========================================================
 function setupTabs() {
     const navItems = document.querySelectorAll('.bottom-nav .nav-item');
@@ -1219,11 +1230,11 @@ function setupTabs() {
         item.addEventListener('click', () => {
             const targetTab = item.getAttribute('data-tab');
 
-            // Atualizar botões de navegação
+            // Atualizar botﾃｵes de navegaﾃｧﾃ｣o
             navItems.forEach(nav => nav.classList.remove('active'));
             item.classList.add('active');
 
-            // Atualizar abas visíveis
+            // Atualizar abas visﾃｭveis
             tabContents.forEach(tab => {
                 const tabId = tab.getAttribute('id');
                 if (tabId === `tab-${targetTab}`) {
@@ -1237,7 +1248,7 @@ function setupTabs() {
 }
 
 // ========================================================
-// MICRO-INTERAÇÕES: ANIMAÇÃO DE CONFETES
+// MICRO-INTERAﾃ�髭S: ANIMAﾃ�グ DE CONFETES
 // ========================================================
 function triggerConfetti() {
     if (typeof confetti === 'function') {
@@ -1310,7 +1321,7 @@ function renderStreaks() {
     const badge = document.querySelector('.streak-badge');
     if(badge) {
         const streak = appState.streak || 0;
-        badge.innerHTML = `Fogo 🔥 ${streak} dias`;
+        badge.innerHTML = `Fogo �櫨 ${streak} dias`;
     }
 }
 
@@ -1323,7 +1334,7 @@ function checkAndIncrementStreak() {
             saveStateToStorage();
             renderStreaks();
             triggerConfetti();
-            showToast('Parabéns! Você completou todas as missões do dia! 🔥', 'success');
+            showToast('Parabﾃｩns! Vocﾃｪ completou todas as missﾃｵes do dia! �櫨', 'success');
         }
     }
 }
@@ -1345,7 +1356,7 @@ function openGroceryModal() {
     
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h2 style="font-family:var(--font-heading);">🛒 Lista de Compras (7 Dias)</h2>
+            <h2 style="font-family:var(--font-heading);">�將 Lista de Compras (7 Dias)</h2>
             <div style="display:flex;gap:10px;">
                 <button class="btn btn-secondary btn-icon" id="btn-pdf-grocery"><i data-lucide="download"></i> PDF</button>
                 <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
@@ -1405,12 +1416,12 @@ function openSwapModal(mealIdx, itemIdx) {
         item.original_quantity = item.quantity;
     }
     
-    const isBreakfastOrSnack = meal.name.toLowerCase().includes('café') || meal.name.toLowerCase().includes('lanche');
+    const isBreakfastOrSnack = meal.name.toLowerCase().includes('cafﾃｩ') || meal.name.toLowerCase().includes('lanche');
     
     if(item.carb > item.prot) {
         if (isBreakfastOrSnack) {
             swaps = [
-                { name: 'Pão Integral', mult: 0.8 },
+                { name: 'Pﾃ｣o Integral', mult: 0.8 },
                 { name: 'Aveia em Flocos', mult: 0.5 },
                 { name: 'Banana', mult: 3.0 },
                 { name: 'Tapioca', mult: 0.9 },
@@ -1422,7 +1433,7 @@ function openSwapModal(mealIdx, itemIdx) {
                 { name: 'Arroz Integral', mult: 1.0 },
                 { name: 'Batata Doce Cozida', mult: 1.5 },
                 { name: 'Mandioca', mult: 1.2 },
-                { name: 'Macarrão Integral', mult: 1.0 }
+                { name: 'Macarrﾃ｣o Integral', mult: 1.0 }
             ];
         }
     } else if(item.prot > item.fat) {
@@ -1437,8 +1448,8 @@ function openSwapModal(mealIdx, itemIdx) {
         } else {
             swaps = [
                 { name: 'Peito de Frango', mult: 1.0 },
-                { name: 'Patinho (Carne Moída)', mult: 1.0 },
-                { name: 'Tilápia', mult: 1.3 },
+                { name: 'Patinho (Carne Moﾃｭda)', mult: 1.0 },
+                { name: 'Tilﾃ｡pia', mult: 1.3 },
                 { name: 'Atum', mult: 1.0 },
                 { name: 'Carne de Porco Magra', mult: 1.0 }
             ];
@@ -1463,7 +1474,7 @@ function openSwapModal(mealIdx, itemIdx) {
     
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-            <h2 style="font-family:var(--font-heading);">🔁 Substituir Alimento</h2>
+            <h2 style="font-family:var(--font-heading);">�煤 Substituir Alimento</h2>
             <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='none'"><i data-lucide="x"></i></button>
         </div>
         <p style="color:var(--text-secondary);margin-bottom:16px;">Trocando: <strong>${item.name}</strong></p>
@@ -1504,7 +1515,7 @@ function performSwap(mealIdx, itemIdx, newName, multiplier) {
     saveStateToStorage();
     renderDietTab();
     document.getElementById('swap-modal').style.display = 'none';
-    showToast('Alimento substituído com sucesso!', 'success');
+    showToast('Alimento substituﾃｭdo com sucesso!', 'success');
 }
 
 function restoreOriginalSwap(mealIdx, itemIdx) {
@@ -1527,7 +1538,7 @@ function saveMeasurements() {
     const waist = parseFloat(document.getElementById('meas-waist').value) || 0;
     
     if(isNaN(weight)) {
-        showToast('Peso é obrigatório!', 'error');
+        showToast('Peso ﾃｩ obrigatﾃｳrio!', 'error');
         return;
     }
     
@@ -1599,3 +1610,64 @@ function renderChart() {
         }
     });
 }
+// --- NEW PROFILE FEATURES ---
+document.addEventListener('DOMContentLoaded', () => {
+    const uploadInput = document.getElementById('profile-pic-upload');
+    if(uploadInput) {
+        uploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async (evt) => {
+                const base64 = evt.target.result;
+                appState.profile_pic = base64;
+                saveStateToStorage();
+                const avatar = document.getElementById('profile-avatar-img');
+                if(avatar) avatar.src = base64;
+                
+                if(authState.isLoggedIn && authState.email) {
+                    try {
+                        await fetch('/api/user/save-plan', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({ email: authState.email, profile_pic: base64 })
+                        });
+                        showToast('Foto atualizada!', 'success');
+                    } catch(e) { console.error(e); }
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const btnChangePw = document.getElementById('btn-change-password');
+    if(btnChangePw) {
+        btnChangePw.addEventListener('click', async () => {
+            if(!authState.isLoggedIn) {
+                showToast('Voc� precisa estar logado!', 'error');
+                return;
+            }
+            const inputPw = document.getElementById('input-new-password');
+            const newPw = inputPw.value;
+            if(newPw.length < 6) {
+                showToast('Senha muito curta!', 'error');
+                return;
+            }
+            try {
+                const resp = await fetch('/api/user/change-password', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email: authState.email, new_password: newPw })
+                });
+                if(resp.ok) {
+                    showToast('Senha alterada com sucesso!', 'success');
+                    inputPw.value = '';
+                } else {
+                    showToast('Erro ao alterar senha', 'error');
+                }
+            } catch(e) {
+                showToast('Erro de conex縊', 'error');
+            }
+        });
+    }
+});
