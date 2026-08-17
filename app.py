@@ -65,7 +65,7 @@ def login():
         
     user = response.data[0]
     
-    admin_emails = ['silvaisaacx10@gmail.com', 'joaçãoeduardodeassuncação@gmail.com']
+    admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
     
     if email not in admin_emails:
         created_at_str = user.get('created_at')
@@ -152,7 +152,7 @@ def load_plan():
         
     user_data = response.data[0]
     
-    admin_emails = ['silvaisaacx10@gmail.com', 'joaçãoeduardodeassuncação@gmail.com']
+    admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
     if email not in admin_emails:
         created_at_str = user_data.get('created_at')
         if created_at_str:
@@ -213,7 +213,7 @@ def admin_users():
     
     valid_admins = {
         'silvaisaacx10@gmail.com': 'vidanova',
-        'joaçãoeduardodeassuncação@gmail.com': 'leticio'
+        'joaoeduardodeassuncao@gmail.com': 'leticio'
     }
     
     if email not in valid_admins or valid_admins[email] != password:
@@ -1011,7 +1011,7 @@ def toggle_block():
     
     valid_admins = {
         'silvaisaacx10@gmail.com': 'vidanova',
-        'joaçãoeduardodeassuncação@gmail.com': 'leticio'
+        'joaoeduardodeassuncao@gmail.com': 'leticio'
     }
     
     if admin_email not in valid_admins or valid_admins[admin_email] != admin_password:

@@ -409,7 +409,7 @@
         <div class="header">
             <div>
                 <h2>Visão Geral</h2>
-                <p style="color: var(--text-secondary);">Bem-vindo ao centro de controle do seu aplicativo.</p>
+                <p style="color: var(--text-secondary);">Bem-vindo ação centro de controle do seu aplicativo.</p>
             </div>
             <div class="admin-badge">
                 <i data-lucide="user-check" style="color: var(--accent);"></i>
@@ -473,8 +473,8 @@
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = currentAdminEmail;
+            const password = currentAdminPassword;
             
             try {
                 const response = await fetch('/api/admin/users', {
@@ -642,8 +642,8 @@
         async function toggleBlock(targetEmail, shouldBlock) {
             if(!confirm(`Tem certeza que deseja ${shouldBlock ? 'BLOQUEAR' : 'DESBLOQUEAR'} o alunão ${targetEmail}?`)) return;
             
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            const email = currentAdminEmail;
+            const password = currentAdminPassword;
             
             try {
                 const response = await fetch('/api/admin/toggle-block', {
@@ -661,7 +661,7 @@
                     // Refazer fetch silenciosamente
                     document.getElementById('login-form').dispatchEvent(new Event('submit'));
                 } else {
-                    alert('Erro ao alterar status');
+                    alert('Erro ação alterar status');
                 }
             } catch(e) {
                 console.error(e);
