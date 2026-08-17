@@ -319,7 +319,7 @@ FOOD_TEMPLATES = {
         ],
         'jantar': [
             {'name': 'Proteína Texturizada de Soja (PTS) refogada', 'base_qty': 80, 'unit': 'g', 'prot_per_unit': 0.45, 'carb_per_unit': 0.25, 'fat_per_unit': 0.01, 'base_cal': 2.9},
-            {'name': 'Batata cozida com casca ou Abóbora cabotiá', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.02, 'carb_per_unit': 0.15, 'fat_per_unit': 0.001, 'base_cal': 0.7},
+            {'name': 'Batata cozida com casca ou Abóbora cabotiáá', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.02, 'carb_per_unit': 0.15, 'fat_per_unit': 0.001, 'base_cal': 0.7},
             {'name': 'Salada de repolho, cenoura e gergelim', 'base_qty': 1, 'unit': 'prato', 'prot_per_unit': 1.5, 'carb_per_unit': 5, 'fat_per_unit': 2, 'base_cal': 40}
         ]
     },
@@ -353,23 +353,23 @@ EXERCISES_DATABASE = {
         {'name': 'Supino Inclinado com Halteres', 'focus': 'Peito Superior', 'rest': '90s', 'description': 'Banco inclinado a 30°, focar na contração do peito superior.'},
         {'name': 'Desenvolvimento Militar com Halteres', 'focus': 'Ombros Anterior', 'rest': '90s', 'description': 'Sentado ou em pé, empurrar os halteres verticalmente.'},
         {'name': 'Elevação Lateral com Halteres', 'focus': 'Ombros Lateral', 'rest': '60s', 'description': 'Elevar os halteres lateralmente até a linha dos ombros, mantendo o cotovelo levemente flexionado.'},
-        {'name': 'Tríceps na Polia com Barra Reta', 'focus': 'Tríceps', 'rest': '60s', 'description': 'Estender completamente os braços na polia, mantendo os cotovelos fixos ao lado do corpo.'},
+        {'name': 'Tríceps na Pãolia com Barra Reta', 'focus': 'Tríceps', 'rest': '60s', 'description': 'Estender completamente os braços na polia, mantendo os cotovelos fixos ao lado do corpo.'},
         {'name': 'Tríceps Testa com Halteres', 'focus': 'Tríceps Cabeça Longa', 'rest': '75s', 'description': 'Deitado, flexionar os cotovelos trazendo os halteres ao lado da testa.'}
     ],
     'pull': [
-        {'name': 'Puxada Aberta na Polia Alta', 'focus': 'Dorsais (Costas)', 'rest': '90s', 'description': 'Puxar a barra em direção ao peitoral superior, contraindo as escápulas.'},
+        {'name': 'Puxada Aberta na Pãolia Alta', 'focus': 'Dorsais (Costas)', 'rest': '90s', 'description': 'Puxar a barra em direção ao peitoral superior, contraindo as escápulas.'},
         {'name': 'Remada Curvada com Barra (Pronada)', 'focus': 'Costas Espessura', 'rest': '90s', 'description': 'Tronco inclinado, puxar a barra na altura do umbigo mantendo a coluna ereta.'},
         {'name': 'Remada Baixa Triângulo', 'focus': 'Costas Centro/Lombar', 'rest': '75s', 'description': 'Sentado na máquina de remada, puxar o triângulo rente ao abdômen.'},
-        {'name': 'Crucifixo Invertido com Halteres', 'focus': 'Deltoide Posterior', 'rest': '60s', 'description': 'Tronco inclinado para frente, abrir os braços lateralmente focando nas costas superiores.'},
+        {'name': 'Crucifixo Invertido com Halteres', 'focus': 'Deltoide Pãosterior', 'rest': '60s', 'description': 'Tronco inclinado para frente, abrir os braços lateralmente focando nas costas superiores.'},
         {'name': 'Rosca Direta com Barra W', 'focus': 'Bíceps Cabeça Curta', 'rest': '75s', 'description': 'Flexionar os braços erguendo a barra, esmagando o bíceps no topo.'},
         {'name': 'Rosca Martelo com Halteres', 'focus': 'Bíceps/Braquiorradial', 'rest': '60s', 'description': 'Pegada neutra (palmas viradas para dentro), flexionar os braços alternadamente.'}
     ],
     'legs': [
         {'name': 'Agachamento Livre com Barra', 'focus': 'Quadríceps/Glúteos', 'rest': '120s', 'description': 'Barra nas costas, agachar até que as coxas fiquem paralelas ao chão ou mais.'},
-        {'name': 'Leg Press 45°', 'focus': 'Quadríceps/Cadeia Posterior', 'rest': '90s', 'description': 'Pressione a plataforma controlando a descida até 90 graus de flexão.'},
+        {'name': 'Leg Press 45°', 'focus': 'Quadríceps/Cadeia Pãosterior', 'rest': '90s', 'description': 'Pressione a plataforma controlando a descida até 90 graus de flexão.'},
         {'name': 'Cadeira Extensora', 'focus': 'Quadríceps Isolado', 'rest': '60s', 'description': 'Extensão completa dos joelhos na máquina, contraindo o quadríceps por 1 segundo no topo.'},
-        {'name': 'Mesa Flexora', 'focus': 'Posteriores de Coxa', 'rest': '60s', 'description': 'Deitado na máquina, flexionar os joelhos trazendo o rolo até a linha dos glúteos.'},
-        {'name': 'Stiff com Halteres ou Barra', 'focus': 'Posteriores/Glúteos', 'rest': '90s', 'description': 'Descer a barra rente às pernas flexionando levemente os joelhos e empurrando o quadril para trás.'},
+        {'name': 'Mesa Flexora', 'focus': 'Pãosteriores de Coxa', 'rest': '60s', 'description': 'Deitado na máquina, flexionar os joelhos trazendo o rolo até a linha dos glúteos.'},
+        {'name': 'Stiff com Halteres ou Barra', 'focus': 'Pãosteriores/Glúteos', 'rest': '90s', 'description': 'Descer a barra rente às pernas flexionando levemente os joelhos e empurrando o quadril para trás.'},
         {'name': 'Gêmeos Sentado (Panturrilhas)', 'focus': 'Panturrilhas', 'rest': '60s', 'description': 'Realizar a flexão plantar na máquina com amplitude máxima.'}
     ],
     'full_body': [
@@ -406,14 +406,14 @@ def validate_user_data(data):
     try:
         weight = float(data.get('weight', 0))
         if weight < 30 or weight > 250:
-            return {'error': True, 'field': 'weight', 'message': f'⚠️ O peso informado ({weight} kg) não é humanamente possível. Por favor, insira seu peso real entre 30 kg e 250 kg.'}
+            return {'error': True, 'field': 'weight', 'message': f'⚠️ O peso informado ({weight} kg) não é humanamente possível. Pãor favor, insira seu peso real entre 30 kg e 250 kg.'}
     except (TypeError, ValueError):
         return {'error': True, 'field': 'weight', 'message': '⚠️ Peso inválido.'}
 
     try:
         height = float(data.get('height', 0))
         if height < 100 or height > 230:
-            return {'error': True, 'field': 'height', 'message': f'⚠️ A altura informada ({height} cm) não é humanamente possível. Por favor, insira sua altura real entre 100 cm e 230 cm.'}
+            return {'error': True, 'field': 'height', 'message': f'⚠️ A altura informada ({height} cm) não é humanamente possível. Pãor favor, insira sua altura real entre 100 cm e 230 cm.'}
     except (TypeError, ValueError):
         return {'error': True, 'field': 'height', 'message': '⚠️ Altura inválida.'}
         
@@ -657,7 +657,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Terça-feira',
-                'title': '⚡ Treino B - Puxar (Costas, Deltoide Post. e Bíceps)',
+                'title': '⚡ Treino B - Puxar (Costas, Deltoide Pãost. e Bíceps)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['pull'][0]['name'], 'sets': 4, 'reps': '8-10', 'rest': EXERCISES_DATABASE['pull'][0]['rest'], 'notes': EXERCISES_DATABASE['pull'][0]['description']},
                     {'name': EXERCISES_DATABASE['pull'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': EXERCISES_DATABASE['pull'][1]['rest'], 'notes': EXERCISES_DATABASE['pull'][1]['description']},
