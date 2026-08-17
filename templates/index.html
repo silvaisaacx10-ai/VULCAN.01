@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VULCAN Fitness</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <!-- App Container -->
+    <div id="app-container">
+
+        <!-- Login Screen -->
+        <section id="login-screen" class="screen active">
+            <div class="login-wrapper">
+                <div class="login-brand">
+                    <i data-lucide="flame" class="brand-icon"></i>
+                    <h1>VULCAN</h1>
+                    <p>Eleve seu corpo, forje sua mente.</p>
+                </div>
+                
+                <form id="login-form" class="glass-panel">
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
+                        <button type="button" class="tab-btn active" id="tab-login" onclick="setAuthMode('login')">Entrar</button>
+                        <button type="button" class="tab-btn" id="tab-register" onclick="setAuthMode('register')">Criar Conta</button>
+                    </div>
+                    <div class="input-group" id="group-name" style="display:none;">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="auth-name" placeholder="Seu Nome Completo">
+                    </div>
+                    <div class="input-group">
+                        <i data-lucide="mail"></i>
+                        <input type="email" id="auth-email" placeholder="E-mail" required>
+                    </div>
+                    <div class="input-group">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="auth-password" placeholder="Senha" required>
+                    </div>
+                    <button type="submit" class="btn-primary" id="btn-auth">Entrar</button>
+                    <div id="auth-error" class="error-text hidden"></div>
+                </form>
+
+            </div>
+        </section>
+
+        <!-- Onboarding Screen -->
+        <section id="onboarding-screen" class="screen hidden">
+            <div class="onboarding-wrapper">
+                <div class="onboarding-header">
+                    <h2>Monte seu Perfil</h2>
+                    <p>Conte-nos sobre você para um plano personalizado.</p>
+                </div>
+                
+                <form id="onboarding-form">
+                    <!-- Step 1: Basic Info -->
+                    <div class="onboarding-step active" id="step-1">
+                        <h3>Informações Básicas</h3>
+                        <div class="input-row">
+                            <div class="input-group">
+                                <label>Idade</label>
+                                <input type="number" id="user-age" placeholder="Ex: 25" required min="10" max="100">
+                            </div>
+                            <div class="input-group">
+                                <label>Peso (kg)</label>
+                                <input type="number" id="user-weight" placeholder="Ex: 75" required min="30" max="300" step="0.1">
+                            </div>
+                            <div class="input-group">
+                                <label>Altura (cm)</label>
+                                <input type="number" id="user-height" placeholder="Ex: 175" required min="100" max="250">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-primary next-step" data-next="step-2">Próximo</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Goal -->
+                    <div class="onboarding-step hidden" id="step-2">
+                        <h3>Qual seu objetivo principal?</h3>
+                        <div class="card-selector" id="goal-selector">
+                            <div class="selection-card" data-value="Emagrecimento">
+                                <i data-lucide="trending-down"></i>
+                                <span>Emagrecimento</span>
+                            </div>
+                            <div class="selection-card" data-value="Hipertrofia">
+                                <i data-lucide="dumbbell"></i>
+                                <span>Hipertrofia</span>
+                            </div>
+                            <div class="selection-card" data-value="Manutenção">
+                                <i data-lucide="activity"></i>
+                                <span>Manutenção</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="user-goal" required>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary prev-step" data-prev="step-1">Voltar</button>
+                            <button type="button" class="btn-primary next-step" data-next="step-3">Próximo</button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Diet Preference -->
+                    <div class="onboarding-step hidden" id="step-3">
+                        <h3>Preferência de Dieta</h3>
+                        <div class="card-selector" id="diet-selector">
+                            <div class="selection-card" data-value="Padrão">
+                                <i data-lucide="utensils"></i>
+                                <span>Padrão</span>
+                            </div>
+                            <div class="selection-card" data-value="Low Carb">
+                                <i data-lucide="leaf"></i>
+                                <span>Low Carb</span>
+                            </div>
+                            <div class="selection-card" data-value="Vegano">
+                                <i data-lucide="sprout"></i>
+                                <span>Vegano</span>
+                            </div>
+                            <div class="selection-card" data-value="Vegetariano">
+                                <i data-lucide="carrot"></i>
+                                <span>Vegetariano</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="user-diet" required>
+                        <div class="form-actions">
+                            <button type="button" class="btn-secondary prev-step" data-prev="step-2">Voltar</button>
+                            <button type="submit" class="btn-primary" id="btn-generate-plan">Gerar Plano VULCAN</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Loading Overlay -->
+            <div id="loading-overlay" class="hidden">
+                <i data-lucide="loader-2" class="spinner"></i>
+                <p>Forjando seu plano...</p>
+            </div>
+        </section>
+
+        <!-- Dashboard Screen -->
+        <section id="dashboard-screen" class="screen hidden">
+            <aside class="sidebar">
+                <div class="sidebar-brand">
+                    <i data-lucide="flame" class="brand-icon"></i>
+                    <span>VULCAN</span>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <a href="#" class="nav-item active" data-target="view-overview"><i data-lucide="layout-dashboard"></i> Resumo</a>
+                    <a href="#" class="nav-item" data-target="view-diet"><i data-lucide="utensils"></i> Dieta</a>
+                    <a href="#" class="nav-item" data-target="view-workout"><i data-lucide="dumbbell"></i> Treino</a>
+                    <a href="#" class="nav-item" data-target="view-profile"><i data-lucide="user"></i> Perfil</a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <button id="btn-logout" class="btn-secondary btn-icon">
+                        <i data-lucide="log-out"></i> Sair
+                    </button>
+                </div>
+            </aside>
+
+            <main class="dashboard-content">
+                <header class="dashboard-header">
+                    <h2 id="view-title">Resumo</h2>
+                    <div class="header-profile">
+                        <div class="profile-avatar-mini" id="header-avatar">
+                            <i data-lucide="user"></i>
+                        </div>
+                        <span id="header-username">Usuário</span>
+                    </div>
+                </header>
+
+                <div class="view-container">
+                    
+                    <!-- Overview View -->
+                    <div id="view-overview" class="view active">
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon"><i data-lucide="flame"></i></div>
+                                <div class="stat-info">
+                                    <h4>Calorias Diárias</h4>
+                                    <span id="overview-calories">-- kcal</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon"><i data-lucide="target"></i></div>
+                                <div class="stat-info">
+                                    <h4>Objetivo</h4>
+                                    <span id="overview-goal">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tips-section glass-panel">
+                            <h3><i data-lucide="lightbulb"></i> Dicas VULCAN</h3>
+                            <ul class="tips-list">
+                                <li>Mantenha-se hidratado: beba pelo menos 2L de água por dia.</li>
+                                <li>O descanso é tão importante quanto o treino. Durma bem.</li>
+                                <li>Foque na execução correta dos exercícios antes de aumentar a carga.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Diet View -->
+                    <div id="view-diet" class="view hidden">
+                        <div class="diet-header">
+                            <h3>Suas Refeições</h3>
+                            <p>Clique em "Trocar" para substituir um alimento por uma opção equivalente.</p>
+                        </div>
+                        <div id="meals-container" class="meals-list">
+                            <!-- Meals dynamically injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Workout View -->
+                    <div id="view-workout" class="view hidden">
+                        <div class="workout-header">
+                            <h3>Seu Treino</h3>
+                        </div>
+                        <div id="workouts-container" class="workouts-list">
+                            <!-- Workouts dynamically injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Profile View -->
+                    <div id="view-profile" class="view hidden">
+                        <div class="profile-section glass-panel">
+                            <div class="profile-header">
+                                <div class="avatar-upload">
+                                    <div class="avatar-preview" id="avatar-preview">
+                                        <i data-lucide="user"></i>
+                                    </div>
+                                    <label for="avatar-input" class="avatar-label">
+                                        <i data-lucide="camera"></i> Alterar Foto
+                                    </label>
+                                    <input type="file" id="avatar-input" accept="image/*" class="hidden">
+                                </div>
+                                <div class="profile-info-main">
+                                    <h3 id="profile-name">Nome do Usuário</h3>
+                                    <p id="profile-diet-badge" class="badge">Dieta: --</p>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-details-grid">
+                                <div class="detail-item">
+                                    <label>Idade</label>
+                                    <span id="profile-age">-- anos</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Peso</label>
+                                    <span id="profile-weight">-- kg</span>
+                                </div>
+                                <div class="detail-item">
+                                    <label>Altura</label>
+                                    <span id="profile-height">-- cm</span>
+                                </div>
+                            </div>
+                            
+                            <button id="btn-recalculate" class="btn-primary mt-4">Refazer Avaliação</button>
+                        </div>
+                    </div>
+
+                </div>
+            </main>
+        </section>
+
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
