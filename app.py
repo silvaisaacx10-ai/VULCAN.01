@@ -11,11 +11,16 @@ app = Flask(__name__)
 SUPABASE_URL = 'https://vttftmbzhieocsnrltuf.supabase.co'
 SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dGZ0bWJ6aGllb2NzbnJsdHVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjM5MTA1NSwiZXhwIjoyMTAxOTY3MDU1fQ.psEljKT4TsxWWPONVStGKWuEDEwm7Ip8ieUkLiRGreE'
 
+
+SUPABASE_INIT_ERROR = None
 try:
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 except Exception as e:
     print(f"Failed to initialize Supabase client: {e}")
+    import traceback
+    SUPABASE_INIT_ERROR = str(e) + " | " + traceback.format_exc()
     supabase = None
+
 
 EXEMPT_EMAILS = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
 
@@ -62,6 +67,9 @@ def register():
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
+    if supabase is None:
+        return jsonify({'error': f"CRITICAL SUPABASE INIT ERROR: {SUPABASE_INIT_ERROR}"}), 500
+
     try:
         data = request.json
         email = data.get('email')
