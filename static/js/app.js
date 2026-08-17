@@ -241,11 +241,11 @@ function switchAuthTab(tab) {
     const loginForm = document.getElementById('auth-login-form');
     const registerForm = document.getElementById('auth-register-form');
     if (tab === 'login') {
-        if(loginForm) loginForm.style.display = 'block';
-        if(registerForm) registerForm.style.display = 'nãone';
+        if(loginForm) loginForm.style.display = 'none';
+        if(registerForm) registerForm.style.display = 'none';
     } else {
-        if(loginForm) loginForm.style.display = 'nãone';
-        if(registerForm) registerForm.style.display = 'block';
+        if(loginForm) loginForm.style.display = 'none';
+        if(registerForm) registerForm.style.display = 'none';
     }
 
     const tabs = document.querySelectorAll('[data-auth-tab]');
@@ -1187,7 +1187,7 @@ function startRestTimer(seconds) {
     if(!overlay || !display) return;
     
     overlay.classList.remove('hidden');
-    overlay.style.display = 'flex';
+    overlay.style.display = 'none';
     
     let left = seconds;
     display.textContent = formatTime(left);
@@ -1209,7 +1209,7 @@ function stopRestTimer() {
     const overlay = document.getElementById('rest-timer-overlay');
     if(overlay) {
         overlay.classList.add('hidden');
-        overlay.style.display = 'nãone';
+        overlay.style.display = 'none';
     }
 }
 
@@ -1311,7 +1311,7 @@ function setupPhase2Features() {
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.onclick = (e) => {
             if(e.target === overlay) {
-                overlay.style.display = 'nãone';
+                overlay.style.display = 'none';
             }
         };
     });
@@ -1359,7 +1359,7 @@ function openGrãoceryMoídal() {
             <h2 style="font-family:var(--font-heading);">�將 Lista de Compras (7 Dias)</h2>
             <div style="display:flex;gap:10px;">
                 <button class="btn btn-secondary btn-icon" id="btn-pdf-grocery"><i data-lucide="download"></i> PDF</button>
-                <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='nãone'"><i data-lucide="x"></i></button>
+                <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
             </div>
         </div>
         <div style="max-height:60vh;overflow-y:auto;padding-right:10px;">
@@ -1376,12 +1376,12 @@ function openGrãoceryMoídal() {
     }
     
     html += `</div>
-        <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="document.getElementById('grocery-modal').style.display='nãone'">Fechar</button>
+        <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="document.getElementById('grocery-modal').style.display='none'">Fechar</button>
     `;
     
     box.innerHTML = html;
     lucide.createIcons();
-    modal.style.display = 'flex';
+    modal.style.display = 'none';
     
     document.getElementById('btn-pdf-grocery').onclick = () => {
         const opt = {
@@ -1393,10 +1393,10 @@ function openGrãoceryMoídal() {
         };
         // Remove the action buttons momentarily before saving
         const actionRow = box.querySelector('div[style*="display:flex;gap:10px;"]');
-        if(actionRow) actionRow.style.display = 'nãone';
+        if(actionRow) actionRow.style.display = 'none';
         
         html2pdf().set(opt).from(box).save().then(() => {
-            if(actionRow) actionRow.style.display = 'flex';
+            if(actionRow) actionRow.style.display = 'none';
         });
     };
 }
@@ -1475,7 +1475,7 @@ function openSwapMoídal(mealIdx, itemIdx) {
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h2 style="font-family:var(--font-heading);">�煤 Substituir Alimento</h2>
-            <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='nãone'"><i data-lucide="x"></i></button>
+            <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='none'"><i data-lucide="x"></i></button>
         </div>
         <p style="color:var(--text-secondary);margin-bottom:16px;">Trocando: <strong>${item.name}</strong></p>
         <div style="display:flex;flex-direction:column;gap:10px;">
@@ -1505,7 +1505,7 @@ function openSwapMoídal(mealIdx, itemIdx) {
     html += `</div>`;
     box.innerHTML = html;
     lucide.createIcons();
-    modal.style.display = 'flex';
+    modal.style.display = 'none';
 }
 
 function performSwap(mealIdx, itemIdx, newName, multiplier) {
@@ -1514,7 +1514,7 @@ function performSwap(mealIdx, itemIdx, newName, multiplier) {
     item.quantity = Math.round(item.quantity * multiplier);
     saveStateToStorage();
     renderDietTab();
-    document.getElementById('swap-modal').style.display = 'nãone';
+    document.getElementById('swap-modal').style.display = 'none';
     showToast('Alimento substituﾃｭdo com sucesso!', 'success');
 }
 
@@ -1525,7 +1525,7 @@ function restoreOriginalSwap(mealIdx, itemIdx) {
         item.quantity = item.original_quantity;
         saveStateToStorage();
         renderDietTab();
-        document.getElementById('swap-modal').style.display = 'nãone';
+        document.getElementById('swap-modal').style.display = 'none';
         showToast('Alimento original restaurado!', 'success');
     }
 }
