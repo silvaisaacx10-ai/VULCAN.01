@@ -452,7 +452,6 @@
                         <tr>
                             <th>Aluno</th>
                             <th>Data de Cadastro</th>
-                            <th>Último Acesso</th>
                             <th>Tempo de Uso</th>
                             <th>Status da Conta</th>
                             <th style="text-align: right;">Ações</th>
@@ -537,22 +536,6 @@
                 const tr = document.createElement('tr');
                 
                 const dateStr = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'}) : 'N/A';
-                
-                let lastActiveStr = 'Nunca acessou';
-                if (user.last_active) {
-                    const activeDate = new Date(user.last_active);
-                    const now = new Date();
-                    const diffHours = (now - activeDate) / (1000 * 60 * 60);
-                    
-                    if (diffHours < 24 && activeDate.getDate() === now.getDate()) {
-                        lastActiveStr = `Hoje às ${activeDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
-                    } else if (diffHours < 48 && activeDate.getDate() === now.getDate() - 1) {
-                        lastActiveStr = `Ontem às ${activeDate.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
-                    } else {
-                        lastActiveStr = activeDate.toLocaleDateString('pt-BR', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute:'2-digit'});
-                    }
-                }
-                
                 const timeStr = formatTimeSpent(user.time_spent);
                 
                 const isBlocked = user.is_blocked || false;
@@ -578,7 +561,6 @@
                         <div style="font-size:0.8rem;color:var(--text-muted);">${user.email}</div>
                     </td>
                     <td>${dateStr}</td>
-                    <td style="color:var(--text-secondary); font-size:0.9rem;">${lastActiveStr}</td>
                     <td style="font-weight:500; color:var(--accent);">${timeStr}</td>
                     <td>${statusHtml}</td>
                     <td style="text-align: right;">${btnHtml}</td>
