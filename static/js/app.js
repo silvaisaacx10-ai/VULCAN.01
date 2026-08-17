@@ -1,6 +1,6 @@
 // STATE E DATA DO APP
 let appState = {
-    plan: null, // Plano recebido do Backend
+    plan: null, // Planão recebido do Backend
     daily: {
         date: "",
         water: 0,
@@ -242,9 +242,9 @@ function switchAuthTab(tab) {
     const registerForm = document.getElementById('auth-register-form');
     if (tab === 'login') {
         if(loginForm) loginForm.style.display = 'block';
-        if(registerForm) registerForm.style.display = 'none';
+        if(registerForm) registerForm.style.display = 'nãone';
     } else {
-        if(loginForm) loginForm.style.display = 'none';
+        if(loginForm) loginForm.style.display = 'nãone';
         if(registerForm) registerForm.style.display = 'block';
     }
 
@@ -514,8 +514,8 @@ async function submitOnboardingForm() {
     const activity = document.getElementById('input-activity').value;
     const goal = document.querySelector('input[name="goal"]:checked')?.value || 'maintain';
     const dietPreference = document.querySelector('input[name="diet_preference"]:checked')?.value || 'omnivore';
-    const chkEconomic = document.getElementById('chk-economic-diet');
-    const economicDiet = chkEconomic ? chkEconomic.checked : false;
+    const chkEconãomic = document.getElementById('chk-econãomic-diet');
+    const econãomicDiet = chkEconãomic ? chkEconãomic.checked : false;
 
     if(!validateFormData(name, age, weight, height)) {
         return;
@@ -530,7 +530,7 @@ async function submitOnboardingForm() {
         "Calculando sua taxa metabﾃｳlica basal (BMR)...",
         "Ajustando gasto calﾃｳrico diﾃ｡rio (TDEE)...",
         "Dividindo seus macronutrientes sob medida...",
-        "Montando sua rotina semanal de treinos...",
+        "Montando sua rotina semanal de treinãos...",
         "Calculando porﾃｧﾃｵes da dieta..."
     ];
     let msgIdx = 0;
@@ -554,12 +554,12 @@ async function submitOnboardingForm() {
                 activity_level: activity,
                 goal,
                 diet_preference: dietPreference,
-                economic_diet: economicDiet
+                econãomic_diet: econãomicDiet
             })
         });
 
         if (!response.ok) {
-            throw new Error('Falha ao gerar plano no servidor.');
+            throw new Error('Falha ao gerar plano não servidor.');
         }
 
         const data = await response.json();
@@ -573,11 +573,11 @@ async function submitOnboardingForm() {
                     body: JSON.stringify({ email: authState.email, plan: data, time_spent: appState.time_spent || 0 })
                 });
             } catch (e) {
-                console.error("Erro ao salvar plano no servidor", e);
+                console.error("Erro ao salvar plano não servidor", e);
             }
         }
 
-        // Salvar plano gerado no estado
+        // Salvar plano gerado não estado
         appState.plan = data;
         appState.daily.date = getTodayDateString();
         appState.daily.water = 0;
@@ -639,7 +639,7 @@ function renderApp() {
     
     const btnLogout = document.getElementById('btn-logout');
     if(btnLogout) {
-        btnLogout.style.display = authState.isLoggedIn ? 'block' : 'none';
+        btnLogout.style.display = authState.isLoggedIn ? 'block' : 'nãone';
     }
     
     let goalText = "Objetivo: Manutenﾃｧﾃ｣o / Definiﾃｧﾃ｣o";
@@ -802,7 +802,7 @@ function updateDashboardVisuals() {
     const nutrition = appState.plan.nutrition;
     const meals = appState.plan.diet_plan;
 
-    // Calcular calorias e macros ingeridas no dia
+    // Calcular calorias e macros ingeridas não dia
     let eatenCal = 0;
     let eatenProt = 0;
     let eatenCarb = 0;
@@ -1064,7 +1064,7 @@ function renderWorkoutDay(dayIdx) {
             <div style="text-align: center; padding: 30px 10px; color: var(--text-secondary);">
                 <i data-lucide="coffee" style="width: 48px; height: 48px; margin-bottom: 12px; color: var(--accent);"></i>
                 <h4 style="font-family: var(--font-heading); font-size: 1.1rem; color: #fff; margin-bottom: 4px;">Dia de Recuperaﾃｧﾃ｣o</h4>
-                <p style="font-size: 0.85rem;">Seu corpo cresce no descanso! Siga a alimentaﾃｧﾃ｣o e aproveite para recuperar as fibras musculares hoje.</p>
+                <p style="font-size: 0.85rem;">Seu corpo cresce não descanso! Siga a alimentaﾃｧﾃ｣o e aproveite para recuperar as fibras musculares hoje.</p>
             </div>
         `;
         
@@ -1107,10 +1107,10 @@ function renderWorkoutDay(dayIdx) {
                     </div>
                 </div>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn btn-icon" onclick="startRestTimer(${restSecs})" style="background: none; border: none; color: var(--accent); cursor: pointer; display: flex; align-items: center; padding: 4px;">
+                    <button class="btn btn-icon" onclick="startRestTimer(${restSecs})" style="background: nãone; border: nãone; color: var(--accent); cursor: pointer; display: flex; align-items: center; padding: 4px;">
                         <i data-lucide="timer"></i>
                     </button>
-                    <button class="btn-toggle-desc" onclick="toggleExerciseDesc(this)" style="background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; padding: 4px;">
+                    <button class="btn-toggle-desc" onclick="toggleExerciseDesc(this)" style="background: nãone; border: nãone; color: white; cursor: pointer; display: flex; align-items: center; padding: 4px;">
                         <i data-lucide="chevron-down"></i>
                     </button>
                 </div>
@@ -1145,7 +1145,7 @@ function renderWorkoutDay(dayIdx) {
                 appState.daily.completedExercises[d] = appState.daily.completedExercises[d].filter(i => i !== idx);
             }
 
-            // Validar se completou o treino inteiro do dia selecionado
+            // Validar se completou o treinão inteiro do dia selecionado
             const totalExercises = workoutDay.exercises.length;
             const completedCount = appState.daily.completedExercises[d].length;
             
@@ -1159,7 +1159,7 @@ function renderWorkoutDay(dayIdx) {
             saveStateToStorage();
             updateDashboardVisuals();
 
-            // Confete por finalizar o treino completo
+            // Confete por finalizar o treinão completo
             if (completedCount === totalExercises && completedCount > 0) {
                 triggerConfetti();
             }
@@ -1209,7 +1209,7 @@ function stopRestTimer() {
     const overlay = document.getElementById('rest-timer-overlay');
     if(overlay) {
         overlay.classList.add('hidden');
-        overlay.style.display = 'none';
+        overlay.style.display = 'nãone';
     }
 }
 
@@ -1276,12 +1276,12 @@ function setupPhase2Features() {
             // Temporary styles to fix blank PDF issue
             const originalMaxHeight = el.style.maxHeight;
             const originalOverflow = el.style.overflow;
-            el.style.maxHeight = 'none';
+            el.style.maxHeight = 'nãone';
             el.style.overflow = 'visible';
             
             const opt = {
                 margin:       10,
-                filename:     'Rotina_Alimentacao.pdf',
+                filename:     'Rotina_Alimentacação.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, logging: true, backgroundColor: '#0f0f0f' },
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
@@ -1311,7 +1311,7 @@ function setupPhase2Features() {
     document.querySelectorAll('.modal-overlay').forEach(overlay => {
         overlay.onclick = (e) => {
             if(e.target === overlay) {
-                overlay.style.display = 'none';
+                overlay.style.display = 'nãone';
             }
         };
     });
@@ -1334,7 +1334,7 @@ function checkAndIncrementStreak() {
             saveStateToStorage();
             renderStreaks();
             triggerConfetti();
-            showToast('Parabﾃｩns! Vocﾃｪ completou todas as missﾃｵes do dia! �櫨', 'success');
+            showToast('Parabﾃｩns! Vocêﾃｪ completou todas as missﾃｵes do dia! �櫨', 'success');
         }
     }
 }
@@ -1359,7 +1359,7 @@ function openGrãoceryMoídal() {
             <h2 style="font-family:var(--font-heading);">�將 Lista de Compras (7 Dias)</h2>
             <div style="display:flex;gap:10px;">
                 <button class="btn btn-secondary btn-icon" id="btn-pdf-grocery"><i data-lucide="download"></i> PDF</button>
-                <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='none'"><i data-lucide="x"></i></button>
+                <button class="btn btn-icon" onclick="document.getElementById('grocery-modal').style.display='nãone'"><i data-lucide="x"></i></button>
             </div>
         </div>
         <div style="max-height:60vh;overflow-y:auto;padding-right:10px;">
@@ -1376,7 +1376,7 @@ function openGrãoceryMoídal() {
     }
     
     html += `</div>
-        <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="document.getElementById('grocery-modal').style.display='none'">Fechar</button>
+        <button class="btn btn-primary btn-block" style="margin-top:20px;" onclick="document.getElementById('grocery-modal').style.display='nãone'">Fechar</button>
     `;
     
     box.innerHTML = html;
@@ -1393,7 +1393,7 @@ function openGrãoceryMoídal() {
         };
         // Remove the action buttons momentarily before saving
         const actionRow = box.querySelector('div[style*="display:flex;gap:10px;"]');
-        if(actionRow) actionRow.style.display = 'none';
+        if(actionRow) actionRow.style.display = 'nãone';
         
         html2pdf().set(opt).from(box).save().then(() => {
             if(actionRow) actionRow.style.display = 'flex';
@@ -1416,7 +1416,7 @@ function openSwapMoídal(mealIdx, itemIdx) {
         item.original_quantity = item.quantity;
     }
     
-    const isBreakfastOrSnack = meal.name.toLowerCase().includes('cafﾃｩ') || meal.name.toLowerCase().includes('lanche');
+    const isBreakfastOrSnack = meal.name.toLowerCase().includes('caf') || meal.name.toLowerCase().includes('lanche');
     
     if(item.carb > item.prot) {
         if (isBreakfastOrSnack) {
@@ -1475,7 +1475,7 @@ function openSwapMoídal(mealIdx, itemIdx) {
     let html = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
             <h2 style="font-family:var(--font-heading);">�煤 Substituir Alimento</h2>
-            <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='none'"><i data-lucide="x"></i></button>
+            <button class="btn btn-icon" onclick="document.getElementById('swap-modal').style.display='nãone'"><i data-lucide="x"></i></button>
         </div>
         <p style="color:var(--text-secondary);margin-bottom:16px;">Trocando: <strong>${item.name}</strong></p>
         <div style="display:flex;flex-direction:column;gap:10px;">
@@ -1514,7 +1514,7 @@ function performSwap(mealIdx, itemIdx, newName, multiplier) {
     item.quantity = Math.round(item.quantity * multiplier);
     saveStateToStorage();
     renderDietTab();
-    document.getElementById('swap-modal').style.display = 'none';
+    document.getElementById('swap-modal').style.display = 'nãone';
     showToast('Alimento substituﾃｭdo com sucesso!', 'success');
 }
 
@@ -1525,7 +1525,7 @@ function restoreOriginalSwap(mealIdx, itemIdx) {
         item.quantity = item.original_quantity;
         saveStateToStorage();
         renderDietTab();
-        document.getElementById('swap-modal').style.display = 'none';
+        document.getElementById('swap-modal').style.display = 'nãone';
         showToast('Alimento original restaurado!', 'success');
     }
 }
@@ -1644,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(btnChangePw) {
         btnChangePw.addEventListener('click', async () => {
             if(!authState.isLoggedIn) {
-                showToast('Voc� precisa estar logado!', 'error');
+                showToast('Você� precisa estar logado!', 'error');
                 return;
             }
             const inputPw = document.getElementById('input-new-password');

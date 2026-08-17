@@ -37,11 +37,11 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: nãone; /* Firefox */
 }
 
 *::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: nãone; /* Chrome/Safari */
 }
 
 body {
@@ -60,7 +60,7 @@ body {
 /* ESTRUTURA PARA PRESERVAR LAYOUT MOBILE EM QUALQUER TELA */
 #app-container {
     width: 100%;
-    max-width: 480px; /* Largura padrão de celular moderno */
+    max-width: 480px; /* Largura padrão de celular modernão */
     height: 100vh;
     min-height: 560px;
     background-color: var(--bg-primary);
@@ -71,7 +71,7 @@ body {
     overflow: hidden;
 }
 
-/* Na visualização de desktop, vamos criar uma simulação de borda fosca para parecer um app elegante */
+/* Na visualizao de desktop, vamos criar uma simulao de borda fosca para parecer um app elegante */
 @media (min-width: 481px) {
     #app-container {
         height: 850px;
@@ -88,7 +88,7 @@ body {
     gap: 8px;
     padding: 14px 24px;
     border-radius: 12px;
-    border: none;
+    border: nãone;
     font-family: var(--font-heading);
     font-weight: 700;
     font-size: 1rem;
@@ -162,7 +162,7 @@ body {
     display: flex;
     flex-direction: column;
     opacity: 0;
-    pointer-events: none;
+    pointer-events: nãone;
     transform: scale(0.98);
     transition: opacity var(--transition-normal), transform var(--transition-normal);
     z-index: 10;
@@ -231,7 +231,7 @@ body {
 }
 
 .wizard-step {
-    display: none;
+    display: nãone;
     flex-direction: column;
     animation: slideIn var(--transition-normal) forwards;
 }
@@ -297,7 +297,7 @@ body {
 
 .form-group input:focus,
 .form-group select:focus {
-    outline: none;
+    outline: nãone;
     border-color: var(--accent);
     box-shadow: 0 0 10px rgba(210, 255, 0, 0.1);
 }
@@ -314,7 +314,7 @@ body {
 }
 
 .gender-card input[type="radio"] {
-    display: none;
+    display: nãone;
 }
 
 .gender-content {
@@ -361,7 +361,7 @@ body {
 }
 
 .goal-card input[type="radio"] {
-    display: none;
+    display: nãone;
 }
 
 .goal-content {
@@ -418,7 +418,7 @@ body {
 }
 
 .diet-card input[type="radio"] {
-    display: none;
+    display: nãone;
 }
 
 .diet-content {
@@ -598,7 +598,7 @@ body {
 
 /* TRANSICIONAR ABAS */
 .tab-content {
-    display: none;
+    display: nãone;
     animation: fadeIn var(--transition-fast) forwards;
 }
 
@@ -774,7 +774,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: nãone;
     z-index: 1;
 }
 
@@ -850,7 +850,7 @@ body {
 }
 
 .checklist-items {
-    list-style: none;
+    list-style: nãone;
     display: flex;
     flex-direction: column;
     gap: 12px;
@@ -865,7 +865,7 @@ body {
     cursor: pointer;
     font-size: 0.9rem;
     color: var(--text-secondary);
-    user-select: none;
+    user-select: nãone;
     transition: var(--transition-fast);
 }
 
@@ -902,7 +902,7 @@ body {
 .checkmark:after {
     content: "";
     position: absolute;
-    display: none;
+    display: nãone;
 }
 
 .checkbox-container input:checked ~ .checkmark:after {
@@ -919,7 +919,7 @@ body {
     transform: rotate(45deg);
 }
 
-.checkbox-container input:checked ~ span:not(.checkmark) {
+.checkbox-container input:checked ~ span:nãot(.checkmark) {
     color: var(--text-muted);
     text-decoration: line-through;
 }
@@ -1087,7 +1087,7 @@ body {
     padding-top: 8px;
     font-size: 0.75rem;
     color: var(--text-secondary);
-    display: none;
+    display: nãone;
     line-height: 1.3;
 }
 
@@ -1097,7 +1097,7 @@ body {
 
 .btn-toggle-desc {
     background: transparent;
-    border: none;
+    border: nãone;
     color: var(--text-muted);
     cursor: pointer;
     padding: 4px;
@@ -1225,7 +1225,7 @@ body {
 }
 
 .meal-food-items {
-    list-style: none;
+    list-style: nãone;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1241,7 +1241,7 @@ body {
 }
 
 .food-item:last-child {
-    border-bottom: none;
+    border-bottom: nãone;
     padding-bottom: 0;
 }
 
@@ -1255,7 +1255,7 @@ body {
     font-size: 0.85rem;
     color: var(--accent);
     font-weight: 700;
-    white-space: nowrap;
+    white-space: nãowrap;
 }
 
 .food-item-macros {
@@ -1378,7 +1378,7 @@ body {
     flex-shrink: 0;
 }
 
-/* No desktop, arredondar a bottom nav nos cantos inferiores para bater com o mockup */
+/* Não desktop, arredondar a bottom nav nos cantos inferiores para bater com o mockup */
 @media (min-width: 481px) {
     .bottom-nav {
         border-bottom-left-radius: 32px;
@@ -1388,7 +1388,7 @@ body {
 
 .nav-item {
     background: transparent;
-    border: none;
+    border: nãone;
     color: var(--text-muted);
     display: flex;
     flex-direction: column;
@@ -1449,7 +1449,7 @@ body {
 .validation-toast.hidden {
     transform: translateX(-50%) translateY(-100%);
     opacity: 0;
-    pointer-events: none;
+    pointer-events: nãone;
 }
 
 .validation-toast.success {
@@ -1539,7 +1539,7 @@ body {
 }
 
 .tip-item:last-child {
-    border-bottom: none;
+    border-bottom: nãone;
 }
 
 .tip-item i {
@@ -1653,8 +1653,8 @@ body {
 }
 
 .auth-tab {
-    background: none;
-    border: none;
+    background: nãone;
+    border: nãone;
     color: var(--text-muted);
     font-size: 1.1rem;
     font-weight: 600;
@@ -1770,7 +1770,7 @@ body {
 
 @media print {
     .bottom-nav, .btn, .workout-controls {
-        display: none !important;
+        display: nãone !important;
     }
     body, #app-container {
         background-color: white !important;

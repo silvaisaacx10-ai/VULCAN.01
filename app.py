@@ -45,7 +45,7 @@ def register():
         return jsonify({'message': 'Usuário registrado com sucesso'}), 201
     except Exception as e:
         print("Error registering:", e)
-        return jsonify({'error': 'Erro ao registrar no banco de dados'}), 500
+        return jsonify({'error': 'Erro ao registrar não banco de dados'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
 def login():
@@ -65,7 +65,7 @@ def login():
         
     user = response.data[0]
     
-    admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
+    admin_emails = ['silvaisaacx10@gmail.com', 'joaçãoeduardodeassuncação@gmail.com']
     
     if email not in admin_emails:
         created_at_str = user.get('created_at')
@@ -131,10 +131,10 @@ def save_plan():
     
     try:
         supabase.table('vulcan_users').update(update_data).eq('email', email).execute()
-        return jsonify({'message': 'Plano salvo com sucesso'}), 200
+        return jsonify({'message': 'Planão salvo com sucesso'}), 200
     except Exception as e:
         print("Error saving plan:", e)
-        return jsonify({'error': 'Erro ao salvar o plano no banco de dados'}), 500
+        return jsonify({'error': 'Erro ao salvar o plano não banco de dados'}), 500
 
 @app.route('/api/user/load-plan', methods=['POST'])
 def load_plan():
@@ -152,7 +152,7 @@ def load_plan():
         
     user_data = response.data[0]
     
-    admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
+    admin_emails = ['silvaisaacx10@gmail.com', 'joaçãoeduardodeassuncação@gmail.com']
     if email not in admin_emails:
         created_at_str = user_data.get('created_at')
         if created_at_str:
@@ -213,7 +213,7 @@ def admin_users():
     
     valid_admins = {
         'silvaisaacx10@gmail.com': 'vidanova',
-        'joaoeduardodeassuncao@gmail.com': 'leticio'
+        'joaçãoeduardodeassuncação@gmail.com': 'leticio'
     }
     
     if email not in valid_admins or valid_admins[email] != password:
@@ -251,7 +251,7 @@ FOOD_TEMPLATES = {
             {'name': 'Vegetais cozidos (Brócolis, Cenoura)', 'base_qty': 100, 'unit': 'g', 'prot_per_unit': 0.02, 'carb_per_unit': 0.07, 'fat_per_unit': 0.002, 'base_cal': 0.4}
         ]
     },
-    'economic': {
+    'econãomic': {
         'cafe_da_manha': [
             {'name': 'Ovos inteiros mexidos/cozidos', 'base_qty': 2, 'unit': 'unidades', 'prot_per_unit': 6, 'carb_per_unit': 0.6, 'fat_per_unit': 5, 'base_cal': 70},
             {'name': 'Pão Francês', 'base_qty': 50, 'unit': 'g', 'prot_per_unit': 0.09, 'carb_per_unit': 0.58, 'fat_per_unit': 0.03, 'base_cal': 3.0},
@@ -302,12 +302,12 @@ FOOD_TEMPLATES = {
     'vegan': {
         'cafe_da_manha': [
             {'name': 'Tofu Mexido com cúrcuma e sal negro', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.12, 'carb_per_unit': 0.02, 'fat_per_unit': 0.06, 'base_cal': 1.1},
-            {'name': 'Pão de fermentação natural (Sourdough)', 'base_qty': 60, 'unit': 'g', 'prot_per_unit': 0.08, 'carb_per_unit': 0.5, 'fat_per_unit': 0.01, 'base_cal': 2.4},
+            {'name': 'Pão de fermentao natural (Sourdough)', 'base_qty': 60, 'unit': 'g', 'prot_per_unit': 0.08, 'carb_per_unit': 0.5, 'fat_per_unit': 0.01, 'base_cal': 2.4},
             {'name': 'Abacate (Avocado)', 'base_qty': 50, 'unit': 'g', 'prot_per_unit': 0.01, 'carb_per_unit': 0.08, 'fat_per_unit': 0.15, 'base_cal': 1.6}
         ],
         'almoco': [
             {'name': 'Tempeh grelhado ou Hambúrguer de Grão de Bico', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.19, 'carb_per_unit': 0.09, 'fat_per_unit': 0.11, 'base_cal': 2.0},
-            {'name': 'Arroz integral ou Quinoa cozida', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.04, 'carb_per_unit': 0.23, 'fat_per_unit': 0.02, 'base_cal': 1.3},
+            {'name': 'Arroz integral ou Quinãoa cozida', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.04, 'carb_per_unit': 0.23, 'fat_per_unit': 0.02, 'base_cal': 1.3},
             {'name': 'Lentilha cozida', 'base_qty': 100, 'unit': 'g', 'prot_per_unit': 0.06, 'carb_per_unit': 0.15, 'fat_per_unit': 0.005, 'base_cal': 0.9},
             {'name': 'Salada de folhas verdes e brócolis picado', 'base_qty': 1, 'unit': 'prato', 'prot_per_unit': 2, 'carb_per_unit': 4, 'fat_per_unit': 0, 'base_cal': 25},
             {'name': 'Sementes de girassol tostadas', 'base_qty': 10, 'unit': 'g', 'prot_per_unit': 0.2, 'carb_per_unit': 0.2, 'fat_per_unit': 0.5, 'base_cal': 5.8}
@@ -337,7 +337,7 @@ FOOD_TEMPLATES = {
         ],
         'lanche_da_tarde': [
             {'name': 'Whey Protein Isolado batido com água', 'base_qty': 30, 'unit': 'g', 'prot_per_unit': 0.85, 'carb_per_unit': 0.02, 'fat_per_unit': 0.01, 'base_cal': 3.6},
-            {'name': 'Mix de Oleaginosas (Amêndoas/Nozes)', 'base_qty': 25, 'unit': 'g', 'prot_per_unit': 0.18, 'carb_per_unit': 0.16, 'fat_per_unit': 0.52, 'base_cal': 6.0}
+            {'name': 'Mix de Oláeaginãosas (Amêndoas/Nozes)', 'base_qty': 25, 'unit': 'g', 'prot_per_unit': 0.18, 'carb_per_unit': 0.16, 'fat_per_unit': 0.52, 'base_cal': 6.0}
         ],
         'jantar': [
             {'name': 'Filé de Salmão ou Sobrecoxa de Frango grelhada', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.22, 'carb_per_unit': 0, 'fat_per_unit': 0.12, 'base_cal': 2.0},
@@ -346,13 +346,13 @@ FOOD_TEMPLATES = {
     }
 }
 
-# Exercícios por tipo de treino e grupo muscular
+# Exercícios por tipo de treinão e grupo muscular
 EXERCISES_DATABASE = {
     'push': [
-        {'name': 'Supino Reto com Barra', 'focus': 'Peito Integral', 'rest': '90s', 'description': 'Deitado no banco, descer a barra até o peito e empurrar com força.'},
-        {'name': 'Supino Inclinado com Halteres', 'focus': 'Peito Superior', 'rest': '90s', 'description': 'Banco inclinado a 30°, focar na contração do peito superior.'},
+        {'name': 'Supinão Reto com Barra', 'focus': 'Peito Integral', 'rest': '90s', 'description': 'Deitado não banco, descer a barra até o peito e empurrar com força.'},
+        {'name': 'Supinão Inclinado com Halteres', 'focus': 'Peito Superior', 'rest': '90s', 'description': 'Banco inclinado a 30°, focar na contrao do peito superior.'},
         {'name': 'Desenvolvimento Militar com Halteres', 'focus': 'Ombros Anterior', 'rest': '90s', 'description': 'Sentado ou em pé, empurrar os halteres verticalmente.'},
-        {'name': 'Elevação Lateral com Halteres', 'focus': 'Ombros Lateral', 'rest': '60s', 'description': 'Elevar os halteres lateralmente até a linha dos ombros, mantendo o cotovelo levemente flexionado.'},
+        {'name': 'Elevao Lateral com Halteres', 'focus': 'Ombros Lateral', 'rest': '60s', 'description': 'Elevar os halteres lateralmente até a linha dos ombros, mantendo o cotovelo levemente flexionado.'},
         {'name': 'Tríceps na Pãolia com Barra Reta', 'focus': 'Tríceps', 'rest': '60s', 'description': 'Estender completamente os braços na polia, mantendo os cotovelos fixos ao lado do corpo.'},
         {'name': 'Tríceps Testa com Halteres', 'focus': 'Tríceps Cabeça Longa', 'rest': '75s', 'description': 'Deitado, flexionar os cotovelos trazendo os halteres ao lado da testa.'}
     ],
@@ -361,23 +361,23 @@ EXERCISES_DATABASE = {
         {'name': 'Remada Curvada com Barra (Pronada)', 'focus': 'Costas Espessura', 'rest': '90s', 'description': 'Tronco inclinado, puxar a barra na altura do umbigo mantendo a coluna ereta.'},
         {'name': 'Remada Baixa Triângulo', 'focus': 'Costas Centro/Lombar', 'rest': '75s', 'description': 'Sentado na máquina de remada, puxar o triângulo rente ao abdômen.'},
         {'name': 'Crucifixo Invertido com Halteres', 'focus': 'Deltoide Pãosterior', 'rest': '60s', 'description': 'Tronco inclinado para frente, abrir os braços lateralmente focando nas costas superiores.'},
-        {'name': 'Rosca Direta com Barra W', 'focus': 'Bíceps Cabeça Curta', 'rest': '75s', 'description': 'Flexionar os braços erguendo a barra, esmagando o bíceps no topo.'},
+        {'name': 'Rosca Direta com Barra W', 'focus': 'Bíceps Cabeça Curta', 'rest': '75s', 'description': 'Flexionar os braços erguendo a barra, esmagando o bíceps não topo.'},
         {'name': 'Rosca Martelo com Halteres', 'focus': 'Bíceps/Braquiorradial', 'rest': '60s', 'description': 'Pegada neutra (palmas viradas para dentro), flexionar os braços alternadamente.'}
     ],
     'legs': [
         {'name': 'Agachamento Livre com Barra', 'focus': 'Quadríceps/Glúteos', 'rest': '120s', 'description': 'Barra nas costas, agachar até que as coxas fiquem paralelas ao chão ou mais.'},
         {'name': 'Leg Press 45°', 'focus': 'Quadríceps/Cadeia Pãosterior', 'rest': '90s', 'description': 'Pressione a plataforma controlando a descida até 90 graus de flexão.'},
-        {'name': 'Cadeira Extensora', 'focus': 'Quadríceps Isolado', 'rest': '60s', 'description': 'Extensão completa dos joelhos na máquina, contraindo o quadríceps por 1 segundo no topo.'},
+        {'name': 'Cadeira Extensora', 'focus': 'Quadríceps Isolado', 'rest': '60s', 'description': 'Extensão completa dos joelhos na máquina, contraindo o quadríceps por 1 segundo não topo.'},
         {'name': 'Mesa Flexora', 'focus': 'Pãosteriores de Coxa', 'rest': '60s', 'description': 'Deitado na máquina, flexionar os joelhos trazendo o rolo até a linha dos glúteos.'},
         {'name': 'Stiff com Halteres ou Barra', 'focus': 'Pãosteriores/Glúteos', 'rest': '90s', 'description': 'Descer a barra rente às pernas flexionando levemente os joelhos e empurrando o quadril para trás.'},
         {'name': 'Gêmeos Sentado (Panturrilhas)', 'focus': 'Panturrilhas', 'rest': '60s', 'description': 'Realizar a flexão plantar na máquina com amplitude máxima.'}
     ],
     'full_body': [
         {'name': 'Agachamento com Halteres', 'focus': 'Pernas Completo', 'rest': '90s', 'description': 'Agachamento com halteres ao lado do corpo ou na altura dos ombros.'},
-        {'name': 'Supino Reto com Halteres', 'focus': 'Peito/Ombro/Tríceps', 'rest': '90s', 'description': 'Empurrar os halteres verticalmente deitado no banco plano.'},
+        {'name': 'Supinão Reto com Halteres', 'focus': 'Peito/Ombro/Tríceps', 'rest': '90s', 'description': 'Empurrar os halteres verticalmente deitado não banco plano.'},
         {'name': 'Remada Serrote com Halter', 'focus': 'Costas/Bíceps', 'rest': '75s', 'description': 'Apoiado em um banco, puxar o halter na lateral do tronco focando na dorsal.'},
         {'name': 'Desenvolvimento com Halteres Sentado', 'focus': 'Ombros', 'rest': '75s', 'description': 'Sentado com apoio nas costas, empurrar os halteres para cima.'},
-        {'name': 'Rosca Inclinada com Halteres', 'focus': 'Bíceps', 'rest': '60s', 'description': 'Sentado no banco inclinado a 45°, realizar a rosca simultânea.'},
+        {'name': 'Rosca Inclinada com Halteres', 'focus': 'Bíceps', 'rest': '60s', 'description': 'Sentado não banco inclinado a 45°, realizar a rosca simultânea.'},
         {'name': 'Prancha Abdominal', 'focus': 'Core', 'rest': '60s', 'description': 'Manter o corpo alinhado apoiado nos antebraços e ponta dos pés pelo tempo estipulado.'}
     ],
     'cardio_hiit': [
@@ -399,7 +399,7 @@ def validate_user_data(data):
     try:
         age = int(data.get('age', 0))
         if age < 14 or age > 80:
-            return {'error': True, 'field': 'age', 'message': '⚠️ A idade deve estar entre 14 e 80 anos.'}
+            return {'error': True, 'field': 'age', 'message': '⚠️ A idade deve estar entre 14 e 80 anãos.'}
     except (TypeError, ValueError):
         return {'error': True, 'field': 'age', 'message': '⚠️ Idade inválida.'}
         
@@ -519,7 +519,7 @@ def calculate_nutrition(gender, weight, height, age, activity_level, goal):
 def generate_meals(target_calories, macros, diet_preference):
     """
     Gera um plano alimentar ajustando as porções dos alimentos proporcionalmente
-    com base no total de calorias alvo do usuário e sua preferência de dieta.
+    com base não total de calorias alvo do usuário e sua preferência de dieta.
     """
     pref = diet_preference if diet_preference in FOOD_TEMPLATES else 'standard'
     template = FOOD_TEMPLATES[pref]
@@ -579,11 +579,11 @@ def generate_meals(target_calories, macros, diet_preference):
             if item['unit'] == 'g' or item['unit'] == 'ml':
                 # Para gramas/ml, os valores prot_per_unit, etc. são calculados por 1 unidade do loop base,
                 # precisamos saber se o multiplicador é direto por grama ou se era valor total do base_qty.
-                # No nosso dicionário, se base_qty era 120 e base_cal 1.65, isso é kcal/grama.
+                # Não nãosso dicionário, se base_qty era 120 e base_cal 1.65, isso é kcal/grama.
                 # Vamos padronizar:
-                # Se prot_per_unit é decimal pequeno (< 1), indica g/grama do alimento.
+                # Se prot_per_unit é decimal pequenão (< 1), indica g/grama do alimento.
                 # Se for inteiro ou maior (como whey 30g com prot 0.8), prot_per_unit é por grama.
-                # Na verdade, no FOOD_TEMPLATES criamos:
+                # Na verdade, não FOOD_TEMPLATES criamos:
                 # - 'Pão integral': 50g base_qty, prot_per_unit = 0.08 (8% proteína, ou seja, g por grama).
                 # - 'Peito de frango': 120g, prot_per_unit = 0.31 (31% proteína, ou seja, g por grama).
                 # - 'Ovos': 2 base_qty, prot_per_unit = 6 (6g por unidade).
@@ -635,8 +635,8 @@ def generate_meals(target_calories, macros, diet_preference):
 
 def generate_workout(goal):
     """
-    Gera um cronograma de treino semanal com exercícios específicos
-    baseado no objetivo do usuário.
+    Gera um cronograma de treinão semanal com exercícios específicos
+    baseado não objetivo do usuário.
     """
     weekly_plan = []
     
@@ -645,7 +645,7 @@ def generate_workout(goal):
         weekly_plan = [
             {
                 'day': 'Segunda-feira',
-                'title': '🔥 Treino A - Empurrar (Peito, Ombros e Tríceps)',
+                'title': '🔥 Treinão A - Empurrar (Peito, Ombros e Tríceps)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['push'][0]['name'], 'sets': 4, 'reps': '8-10', 'rest': EXERCISES_DATABASE['push'][0]['rest'], 'notes': EXERCISES_DATABASE['push'][0]['description']},
                     {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': EXERCISES_DATABASE['push'][1]['rest'], 'notes': EXERCISES_DATABASE['push'][1]['description']},
@@ -657,7 +657,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Terça-feira',
-                'title': '⚡ Treino B - Puxar (Costas, Deltoide Pãost. e Bíceps)',
+                'title': '⚡ Treinão B - Puxar (Costas, Deltoide Pãost. e Bíceps)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['pull'][0]['name'], 'sets': 4, 'reps': '8-10', 'rest': EXERCISES_DATABASE['pull'][0]['rest'], 'notes': EXERCISES_DATABASE['pull'][0]['description']},
                     {'name': EXERCISES_DATABASE['pull'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': EXERCISES_DATABASE['pull'][1]['rest'], 'notes': EXERCISES_DATABASE['pull'][1]['description']},
@@ -677,7 +677,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Quinta-feira',
-                'title': '🍗 Treino C - Pernas Completo',
+                'title': '🍗 Treinão C - Pernas Completo',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['legs'][0]['name'], 'sets': 4, 'reps': '8-10', 'rest': EXERCISES_DATABASE['legs'][0]['rest'], 'notes': EXERCISES_DATABASE['legs'][0]['description']},
                     {'name': EXERCISES_DATABASE['legs'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': EXERCISES_DATABASE['legs'][1]['rest'], 'notes': EXERCISES_DATABASE['legs'][1]['description']},
@@ -689,13 +689,13 @@ def generate_workout(goal):
             },
             {
                 'day': 'Sexta-feira',
-                'title': '💥 Treino Superior Híbrido (Peito & Costas foco Pump)',
+                'title': '💥 Treinão Superior Híbrido (Peito & Costas foco Pump)',
                 'exercises': [
-                    {'name': EXERCISES_DATABASE['push'][0]['name'], 'sets': 3, 'reps': '10', 'rest': '90s', 'notes': 'Supino focado em cadência controlada na descida.'},
+                    {'name': EXERCISES_DATABASE['push'][0]['name'], 'sets': 3, 'reps': '10', 'rest': '90s', 'notes': 'Supinão focado em cadência controlada na descida.'},
                     {'name': EXERCISES_DATABASE['pull'][0]['name'], 'sets': 3, 'reps': '10', 'rest': '90s', 'notes': 'Puxada aberta trabalhando expansão da dorsal.'},
-                    {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '75s', 'notes': 'Supino inclinado com halteres.'},
+                    {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '75s', 'notes': 'Supinão inclinado com halteres.'},
                     {'name': EXERCISES_DATABASE['pull'][2]['name'], 'sets': 3, 'reps': '12', 'rest': '75s', 'notes': 'Remada baixa cabo.'},
-                    {'name': EXERCISES_DATABASE['push'][3]['name'], 'sets': 3, 'reps': '15', 'rest': '60s', 'notes': 'Elevação lateral.'},
+                    {'name': EXERCISES_DATABASE['push'][3]['name'], 'sets': 3, 'reps': '15', 'rest': '60s', 'notes': 'Elevao lateral.'},
                     {'name': EXERCISES_DATABASE['full_body'][5]['name'], 'sets': 3, 'reps': '45 seg', 'rest': '45s', 'notes': EXERCISES_DATABASE['full_body'][5]['description']}
                 ]
             },
@@ -708,9 +708,9 @@ def generate_workout(goal):
             },
             {
                 'day': 'Domingo',
-                'title': '💤 Descanso Total (Recuperação Muscular)',
+                'title': '💤 Descanso Total (Recuperao Muscular)',
                 'exercises': [
-                    {'name': 'Repouso Absoluto', 'sets': 0, 'reps': '-', 'rest': '-', 'notes': 'Durma bem, alimente-se e prepare-se para a próxima semana de treinos.'}
+                    {'name': 'Repouso Absoluto', 'sets': 0, 'reps': '-', 'rest': '-', 'notes': 'Durma bem, alimente-se e prepare-se para a próxima semana de treinãos.'}
                 ]
             }
         ]
@@ -754,8 +754,8 @@ def generate_workout(goal):
                 'day': 'Quinta-feira',
                 'title': '🏃 Cardio Contínuo (LISS) & Mobilidade',
                 'exercises': [
-                    {'name': 'Esteira - Caminhada Inclinada', 'sets': 1, 'reps': '45 min', 'rest': 'Contínuo', 'notes': 'Velocidade de 5.5 a 6.0 km/h com inclinação de 5% a 8%.'},
-                    {'name': 'Alongamentos Gerais e Mobilidade Quadril/Tornozelo', 'sets': 1, 'reps': '15 min', 'rest': 'Livre', 'notes': 'Soltura de articulações e aumento de flexibilidade.'}
+                    {'name': 'Esteira - Caminhada Inclinada', 'sets': 1, 'reps': '45 min', 'rest': 'Contínuo', 'notes': 'Velocidade de 5.5 a 6.0 km/h com inclinao de 5% a 8%.'},
+                    {'name': 'Alongamentos Gerais e Mobilidade Quadril/Tornãozelo', 'sets': 1, 'reps': '15 min', 'rest': 'Livre', 'notes': 'Soltura de articulações e aumento de flexibilidade.'}
                 ]
             },
             {
@@ -763,9 +763,9 @@ def generate_workout(goal):
                 'title': '⚡ Full Body C (Foco Circuito)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['legs'][4]['name'], 'sets': 3, 'reps': '15', 'rest': '60s', 'notes': 'Stiff com halteres.'},
-                    {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '60s', 'notes': 'Supino inclinado halteres.'},
+                    {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '60s', 'notes': 'Supinão inclinado halteres.'},
                     {'name': EXERCISES_DATABASE['pull'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '60s', 'notes': 'Remada curvada barra.'},
-                    {'name': EXERCISES_DATABASE['push'][3]['name'], 'sets': 3, 'reps': '15', 'rest': '45s', 'notes': 'Elevação lateral ombros.'},
+                    {'name': EXERCISES_DATABASE['push'][3]['name'], 'sets': 3, 'reps': '15', 'rest': '45s', 'notes': 'Elevao lateral ombros.'},
                     {'name': EXERCISES_DATABASE['pull'][5]['name'], 'sets': 3, 'reps': '12', 'rest': '45s', 'notes': 'Rosca martelo bíceps.'},
                     {'name': EXERCISES_DATABASE['cardio_hiit'][2]['name'], 'sets': 3, 'reps': '10 reps', 'rest': '30s', 'notes': 'Burpees para pico de queima calórica.'}
                 ]
@@ -774,7 +774,7 @@ def generate_workout(goal):
                 'day': 'Sábado',
                 'title': '💦 Cardio Livre de Fim de Semana',
                 'exercises': [
-                    {'name': 'Esporte livre ou Corrida leve ao ar livre', 'sets': 1, 'reps': '30-40 min', 'rest': 'Livre', 'notes': 'Ciclismo, corrida, futebol, natação ou caminhada rápida.'}
+                    {'name': 'Esporte livre ou Corrida leve ao ar livre', 'sets': 1, 'reps': '30-40 min', 'rest': 'Livre', 'notes': 'Ciclismo, corrida, futebol, natao ou caminhada rápida.'}
                 ]
             },
             {
@@ -790,7 +790,7 @@ def generate_workout(goal):
         weekly_plan = [
             {
                 'day': 'Segunda-feira',
-                'title': '💪 Treino A - Membros Superiores (Foco Tonificação)',
+                'title': '💪 Treinão A - Membros Superiores (Foco Tonificação)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['push'][0]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['push'][0]['description']},
                     {'name': EXERCISES_DATABASE['pull'][0]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['pull'][0]['description']},
@@ -802,7 +802,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Terça-feira',
-                'title': '🦵 Treino B - Membros Inferiores e Core',
+                'title': '🦵 Treinão B - Membros Inferiores e Core',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['legs'][0]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['legs'][0]['description']},
                     {'name': EXERCISES_DATABASE['legs'][4]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['legs'][4]['description']},
@@ -821,7 +821,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Quinta-feira',
-                'title': '💪 Treino A - Membros Superiores (Variação)',
+                'title': '💪 Treinão A - Membros Superiores (Variação)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['push'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['push'][1]['description']},
                     {'name': EXERCISES_DATABASE['pull'][1]['name'], 'sets': 3, 'reps': '10-12', 'rest': '90s', 'notes': EXERCISES_DATABASE['pull'][1]['description']},
@@ -833,7 +833,7 @@ def generate_workout(goal):
             },
             {
                 'day': 'Sexta-feira',
-                'title': '🦵 Treino B - Membros Inferiores (Variação)',
+                'title': '🦵 Treinão B - Membros Inferiores (Variação)',
                 'exercises': [
                     {'name': EXERCISES_DATABASE['legs'][1]['name'], 'sets': 3, 'reps': '12', 'rest': '90s', 'notes': 'Foco em amplitude máxima controlada.'},
                     {'name': EXERCISES_DATABASE['legs'][3]['name'], 'sets': 3, 'reps': '12', 'rest': '60s', 'notes': EXERCISES_DATABASE['legs'][3]['description']},
@@ -846,7 +846,7 @@ def generate_workout(goal):
                 'day': 'Sábado',
                 'title': '🏃 Cardio HIIT Curto',
                 'exercises': [
-                    {'name': EXERCISES_DATABASE['cardio_hiit'][0]['name'], 'sets': 1, 'reps': '15 min', 'rest': 'Tiros intensos', 'notes': '15 minutos de corrida de alta intensidade no formato de tiros rápidos.'}
+                    {'name': EXERCISES_DATABASE['cardio_hiit'][0]['name'], 'sets': 1, 'reps': '15 min', 'rest': 'Tiros intensos', 'notes': '15 minutos de corrida de alta intensidade não formato de tiros rápidos.'}
                 ]
             },
             {
@@ -866,35 +866,35 @@ def get_tips(goal):
         return [
             "Mantenha-se em déficit calórico consistente; é a única forma de perder gordura.",
             "Priorize o consumo de proteínas para preservar a massa magra durante o emagrecimento.",
-            "Faça cardio preferencialmente após o treino de musculação ou em horário alternativo.",
-            "Durma de 7 a 8 horas por noite para regular os hormônios do apetite.",
-            "Beba bastante água para auxiliar no metabolismo e evitar a retenção de líquidos."
+            "Faça cardio preferencialmente após o treinão de musculao ou em horário alternativo.",
+            "Durma de 7 a 8 horas por nãoite para regular os hormônios do apetite.",
+            "Beba bastante água para auxiliar não metabolismo e evitar a retenção de líquidos."
         ]
     elif goal == 'gain':
         return [
             "Mantenha-se em superávit calórico leve para construir músculos sem acumular muita gordura.",
             "Consuma proteínas de forma bem distribuída ao longo do dia.",
-            "Foque em progressão de carga (aumentar peso ou repetições) nos treinos.",
-            "Priorize exercícios compostos (agachamento, supino, terra) que ativam múltiplos grupos musculares.",
-            "Descanse! O músculo cresce durante o período de recuperação, não durante o treino."
+            "Foque em progressão de carga (aumentar peso ou repetições) nos treinãos.",
+            "Priorize exercícios compostos (agachamento, supinão, terra) que ativam múltiplos grupos musculares.",
+            "Descanse! O músculo cresce durante o período de recuperação, não durante o treinão."
         ]
     else:
         return [
             "A consistência é o segredo para manter os resultados a longo prazo.",
             "Equilibre seus macronutrientes para garantir energia e recuperação.",
             "Varie suas fontes de alimentos para garantir um bom aporte de micronutrientes.",
-            "Faça recuperação ativa (caminhada, alongamento) nos dias de descanso.",
-            "Permita-se algumas refeições livres com moderação para manter a saúde mental."
+            "Faça recuperao ativa (caminhada, alongamento) nos dias de descanso.",
+            "Permita-se algumas refeições livres com moderao para manter a saúde mental."
         ]
 
 def get_supplements(goal):
     supplements = [
-        {'name': 'Creatina Monohidratada', 'dose': '3-5g/dia', 'when': 'Qualquer horário, diariamente', 'why': 'Aumenta força e volume muscular', 'priority': 'Essencial'},
-        {'name': 'Whey Protein', 'dose': '20-40g/dia', 'when': 'Pós-treino ou lanches', 'why': 'Facilita bater a meta de proteínas', 'priority': 'Recomendado'}
+        {'name': 'Creatina Monãohidratada', 'dose': '3-5g/dia', 'when': 'Qualquer horário, diariamente', 'why': 'Aumenta força e volume muscular', 'priority': 'Essencial'},
+        {'name': 'Whey Protein', 'dose': '20-40g/dia', 'when': 'Pós-treinão ou lanches', 'why': 'Facilita bater a meta de proteínas', 'priority': 'Recomendado'}
     ]
     if goal == 'lose':
         supplements.extend([
-            {'name': 'Cafeína / Pré-treino', 'dose': '150-300mg', 'when': '30 min antes do treino', 'why': 'Aumenta energia e levemente o metabolismo', 'priority': 'Opcional'},
+            {'name': 'Caféeína / Pré-treinão', 'dose': '150-300mg', 'when': '30 min antes do treinão', 'why': 'Aumenta energia e levemente o metabolismo', 'priority': 'Opcional'},
             {'name': 'Ômega 3', 'dose': '1-2g/dia', 'when': 'Junto com as refeições', 'why': 'Ação anti-inflamatória e saúde cardiovascular', 'priority': 'Recomendado'}
         ])
     elif goal == 'gain':
@@ -956,18 +956,18 @@ def handle_generate_plan():
         activity_level = data.get('activity_level', 'moderate')
         goal = data.get('goal', 'maintain')
         diet_preference = data.get('diet_preference', 'standard')
-        economic_diet = data.get('economic_diet', False)
+        econãomic_diet = data.get('econãomic_diet', False)
         
-        if economic_diet and diet_preference == 'standard':
-            diet_preference = 'economic'
+        if econãomic_diet and diet_preference == 'standard':
+            diet_preference = 'econãomic'
         
         # 1. Calcular Necessidades Energéticas e Macronutrientes (inclui BMI)
         nutrition = calculate_nutrition(gender, weight, height, age, activity_level, goal)
         
-        # 2. Gerar Plano de Refeições
+        # 2. Gerar Planão de Refeições
         meals = generate_meals(nutrition['target_calories'], nutrition, diet_preference)
         
-        # 3. Gerar Plano de Treino Semanal
+        # 3. Gerar Planão de Treinão Semanal
         workout = generate_workout(goal)
         
         # 4. Gerar dados adicionais
@@ -1011,7 +1011,7 @@ def toggle_block():
     
     valid_admins = {
         'silvaisaacx10@gmail.com': 'vidanova',
-        'joaoeduardodeassuncao@gmail.com': 'leticio'
+        'joaçãoeduardodeassuncação@gmail.com': 'leticio'
     }
     
     if admin_email not in valid_admins or valid_admins[admin_email] != admin_password:
