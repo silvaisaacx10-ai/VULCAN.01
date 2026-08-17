@@ -1,10 +1,11 @@
 import os
 import hashlib
 import uuid
+from datetime import datetime, timezone
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client
-from datetime import datetime, timezone
 
+# === SUPABASE CONFIG ===
 SUPABASE_URL = 'https://vttftmbzhieocsnrltuf.supabase.co'
 SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0dGZ0bWJ6aGllb2NzbnJsdHVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NjM5MTA1NSwiZXhwIjoyMTAxOTY3MDU1fQ.psEljKT4TsxWWPONVStGKWuEDEwm7Ip8ieUkLiRGreE'
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
@@ -27,12 +28,13 @@ def register():
     if not email or not password or not name:
         return jsonify({'error': 'Faltam dados'}), 400
         
-    password_hash = hashlib.sha256(password.encode()).hexdigest()
-    
+    # Check if user exists
     response = supabase.table('vulcan_users').select('email').eq('email', email).execute()
     if len(response.data) > 0:
-        return jsonify({'error': 'Usuario ja existe'}), 400
-
+        return jsonify({'error': 'Usuário já existe'}), 400
+    
+    password_hash = hashlib.sha256(password.encode()).hexdigest()
+    
     try:
         supabase.table('vulcan_users').insert({
             'email': email,
@@ -40,8 +42,9 @@ def register():
             'password_hash': password_hash,
             'token': None
         }).execute()
-        return jsonify({'message': 'Usuario registrado com sucesso'}), 201
+        return jsonify({'message': 'Usuário registrado com sucesso'}), 201
     except Exception as e:
+        print("Error registering:", e)
         return jsonify({'error': 'Erro ao registrar no banco de dados'}), 500
 
 @app.route('/api/auth/login', methods=['POST'])
@@ -55,43 +58,49 @@ def login():
     
     if not email or not password:
         return jsonify({'error': 'Faltam dados'}), 400
-        
+    
     response = supabase.table('vulcan_users').select('*').eq('email', email).execute()
     if len(response.data) == 0:
-        return jsonify({'error': 'Credenciais invalidas'}), 401
-
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+        
     user = response.data[0]
-
+    
     admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
-
+    
     if email not in admin_emails:
         created_at_str = user.get('created_at')
         if created_at_str:
             try:
+                # Handle potential fraction of seconds and Z timezone
                 if '.' in created_at_str:
                     created_at_str = created_at_str.split('.')[0]
                 if created_at_str.endswith('Z'):
                     created_at_str = created_at_str[:-1]
                 if '+' in created_at_str:
                     created_at_str = created_at_str.split('+')[0]
+                
                 created_at = datetime.fromisoformat(created_at_str).replace(tzinfo=timezone.utc)
                 diff = datetime.now(timezone.utc) - created_at
+                
                 if diff.days > 21:
+                    # Auto block if not already blocked
                     if not user.get('is_blocked'):
                         supabase.table('vulcan_users').update({'is_blocked': True, 'blocked_by': 'Auto 21 Dias'}).eq('email', email).execute()
                     return jsonify({'error': 'Acesso expirado (21 dias). Renove seu plano.'}), 403
             except Exception as e:
-                print('Date parse error:', e)
+                print("Date parse error:", e)
 
     if user.get('is_blocked'):
         return jsonify({'error': 'Acesso bloqueado pelo administrador. Contate o suporte.'}), 403
-
+        
     password_hash = hashlib.sha256(password.encode()).hexdigest()
+    
     if user.get('password_hash') != password_hash:
-        return jsonify({'error': 'Credenciais invalidas'}), 401
-
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+    
     token = str(uuid.uuid4())
     supabase.table('vulcan_users').update({'token': token}).eq('email', email).execute()
+    
     return jsonify({'token': token, 'name': user.get('name')}), 200
 
 @app.route('/api/user/save-plan', methods=['POST'])
@@ -106,24 +115,26 @@ def save_plan():
     streak = data.get('streak')
     time_spent = data.get('time_spent')
     profile_pic = data.get('profile_pic')
-
+    
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
-
+    
     update_data = {
         'last_active': datetime.now(timezone.utc).isoformat()
     }
+    
     if plan: update_data['plan'] = plan
     if progress_history is not None: update_data['progressHistory'] = progress_history
     if streak is not None: update_data['streak'] = streak
     if time_spent is not None: update_data['time_spent'] = time_spent
     if profile_pic is not None: update_data['profile_pic'] = profile_pic
-
+    
     try:
         supabase.table('vulcan_users').update(update_data).eq('email', email).execute()
         return jsonify({'message': 'Plano salvo com sucesso'}), 200
     except Exception as e:
-        return jsonify({'error': 'Erro ao salvar'}), 500
+        print("Error saving plan:", e)
+        return jsonify({'error': 'Erro ao salvar o plano no banco de dados'}), 500
 
 @app.route('/api/user/load-plan', methods=['POST'])
 def load_plan():
@@ -134,13 +145,13 @@ def load_plan():
     email = data.get('email')
     if not email:
         return jsonify({'error': 'Faltam dados'}), 400
-        
+    
     response = supabase.table('vulcan_users').select('plan, progressHistory, streak, is_blocked, time_spent, profile_pic, created_at').eq('email', email).execute()
     if len(response.data) == 0:
         return jsonify({'error': 'Nenhum plano encontrado'}), 404
-
+        
     user_data = response.data[0]
-
+    
     admin_emails = ['silvaisaacx10@gmail.com', 'joaoeduardodeassuncao@gmail.com']
     if email not in admin_emails:
         created_at_str = user_data.get('created_at')
@@ -152,18 +163,21 @@ def load_plan():
                     created_at_str = created_at_str[:-1]
                 if '+' in created_at_str:
                     created_at_str = created_at_str.split('+')[0]
+                
                 created_at = datetime.fromisoformat(created_at_str).replace(tzinfo=timezone.utc)
                 diff = datetime.now(timezone.utc) - created_at
+                
                 if diff.days > 21:
                     if not user_data.get('is_blocked'):
                         supabase.table('vulcan_users').update({'is_blocked': True, 'blocked_by': 'Auto 21 Dias'}).eq('email', email).execute()
                     return jsonify({'error': 'Acesso expirado (21 dias). Renove seu plano.'}), 403
             except Exception as e:
-                print('Date parse error:', e)
+                print("Date parse error:", e)
 
     if user_data.get('is_blocked'):
         return jsonify({'error': 'Acesso bloqueado'}), 403
-
+    
+    # Send what exists. If everything is null, we might just return empty dicts or None, front-end handles it.
     return jsonify(user_data), 200
 
 @app.route('/api/user/change-password', methods=['POST'])
@@ -171,14 +185,17 @@ def change_password():
     data = request.get_json()
     email = data.get('email')
     new_password = data.get('new_password')
+    
     if not email or not new_password:
         return jsonify({'error': 'Faltam dados'}), 400
+        
     password_hash = hashlib.sha256(new_password.encode()).hexdigest()
     try:
         supabase.table('vulcan_users').update({'password_hash': password_hash}).eq('email', email).execute()
         return jsonify({'message': 'Senha atualizada'}), 200
     except Exception as e:
-        return jsonify({'error': 'Erro ao atualizar'}), 500
+        print("Error changing password:", e)
+        return jsonify({'error': 'Erro ao atualizar banco'}), 500
 
 @app.route('/admin')
 def admin_page():
@@ -187,43 +204,25 @@ def admin_page():
 @app.route('/api/admin/users', methods=['POST'])
 def admin_users():
     data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
     email = data.get('email')
     password = data.get('password')
+    
+    
     valid_admins = {
         'silvaisaacx10@gmail.com': 'vidanova',
         'joaoeduardodeassuncao@gmail.com': 'leticio'
     }
+    
     if email not in valid_admins or valid_admins[email] != password:
-        return jsonify({'error': 'Nao autorizado'}), 401
+        return jsonify({'error': 'Não autorizado'}), 401
+        
     response = supabase.table('vulcan_users').select('email, name, created_at, time_spent, is_blocked, blocked_by, last_active').order('created_at', desc=True).execute()
-    return jsonify({'users': response.data}), 200
-
-@app.route('/api/admin/toggle-block', methods=['POST'])
-def toggle_block():
-    data = request.get_json()
-    admin_email = data.get('admin_email')
-    admin_password = data.get('admin_password')
-    target_email = data.get('target_email')
-    valid_admins = {
-        'silvaisaacx10@gmail.com': 'vidanova',
-        'joaoeduardodeassuncao@gmail.com': 'leticio'
-    }
-    if admin_email not in valid_admins or valid_admins[admin_email] != admin_password:
-        return jsonify({'error': 'Nao autorizado'}), 401
-    if not target_email:
-        return jsonify({'error': 'E-mail do alvo nao fornecido'}), 400
-    admin_name = 'Isaac' if admin_email == 'silvaisaacx10@gmail.com' else 'Joao'
-    try:
-        resp = supabase.table('vulcan_users').select('is_blocked').eq('email', target_email).execute()
-        if len(resp.data) == 0:
-            return jsonify({'error': 'Usuario nao encontrado'}), 404
-        current = resp.data[0].get('is_blocked', False)
-        new_status = not current
-        blocked_by = admin_name if new_status else None
-        supabase.table('vulcan_users').update({'is_blocked': new_status, 'blocked_by': blocked_by}).eq('email', target_email).execute()
-        return jsonify({'message': 'Status atualizado', 'is_blocked': new_status}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 400
+    users_list = response.data
+        
+    return jsonify({'users': users_list}), 200
 
 
 # Banco de dados de Alimentos Base para dimensionamento dinâmico
@@ -250,6 +249,30 @@ FOOD_TEMPLATES = {
             {'name': 'Patinho bovino grelhado ou filé de peixe', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.28, 'carb_per_unit': 0, 'fat_per_unit': 0.07, 'base_cal': 1.8},
             {'name': 'Batata doce cozida ou mandioca', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.015, 'carb_per_unit': 0.2, 'fat_per_unit': 0.001, 'base_cal': 0.86},
             {'name': 'Vegetais cozidos (Brócolis, Cenoura)', 'base_qty': 100, 'unit': 'g', 'prot_per_unit': 0.02, 'carb_per_unit': 0.07, 'fat_per_unit': 0.002, 'base_cal': 0.4}
+        ]
+    },
+    'economic': {
+        'cafe_da_manha': [
+            {'name': 'Ovos inteiros mexidos/cozidos', 'base_qty': 2, 'unit': 'unidades', 'prot_per_unit': 6, 'carb_per_unit': 0.6, 'fat_per_unit': 5, 'base_cal': 70},
+            {'name': 'Pão Francês', 'base_qty': 50, 'unit': 'g', 'prot_per_unit': 0.09, 'carb_per_unit': 0.58, 'fat_per_unit': 0.03, 'base_cal': 3.0},
+            {'name': 'Banana Prata', 'base_qty': 1, 'unit': 'unidade', 'prot_per_unit': 1.3, 'carb_per_unit': 23, 'fat_per_unit': 0.3, 'base_cal': 90}
+        ],
+        'almoco': [
+            {'name': 'Peito de frango desfiado ou Moela de frango', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.31, 'carb_per_unit': 0, 'fat_per_unit': 0.04, 'base_cal': 1.6},
+            {'name': 'Arroz branco cozido', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.025, 'carb_per_unit': 0.28, 'fat_per_unit': 0.002, 'base_cal': 1.3},
+            {'name': 'Feijão carioca ou preto', 'base_qty': 100, 'unit': 'g', 'prot_per_unit': 0.05, 'carb_per_unit': 0.14, 'fat_per_unit': 0.005, 'base_cal': 0.8},
+            {'name': 'Salada de Repolho e Tomate', 'base_qty': 1, 'unit': 'prato', 'prot_per_unit': 1, 'carb_per_unit': 3, 'fat_per_unit': 0, 'base_cal': 15},
+            {'name': 'Azeite de oliva ou Óleo de Soja', 'base_qty': 5, 'unit': 'ml', 'prot_per_unit': 0, 'carb_per_unit': 0, 'fat_per_unit': 0.92, 'base_cal': 8.3}
+        ],
+        'lanche_da_tarde': [
+            {'name': 'Ovos cozidos', 'base_qty': 2, 'unit': 'unidades', 'prot_per_unit': 6, 'carb_per_unit': 0.6, 'fat_per_unit': 5, 'base_cal': 70},
+            {'name': 'Aveia em flocos', 'base_qty': 30, 'unit': 'g', 'prot_per_unit': 0.14, 'carb_per_unit': 0.6, 'fat_per_unit': 0.07, 'base_cal': 3.6},
+            {'name': 'Leite integral', 'base_qty': 200, 'unit': 'ml', 'prot_per_unit': 0.03, 'carb_per_unit': 0.05, 'fat_per_unit': 0.03, 'base_cal': 0.6}
+        ],
+        'jantar': [
+            {'name': 'Carne moída de segunda ou Fígado bovino', 'base_qty': 120, 'unit': 'g', 'prot_per_unit': 0.26, 'carb_per_unit': 0, 'fat_per_unit': 0.10, 'base_cal': 2.1},
+            {'name': 'Batata inglesa cozida', 'base_qty': 150, 'unit': 'g', 'prot_per_unit': 0.018, 'carb_per_unit': 0.18, 'fat_per_unit': 0.001, 'base_cal': 0.8},
+            {'name': 'Cenoura cozida', 'base_qty': 100, 'unit': 'g', 'prot_per_unit': 0.01, 'carb_per_unit': 0.08, 'fat_per_unit': 0.002, 'base_cal': 0.4}
         ]
     },
     'vegetarian': {
@@ -933,6 +956,10 @@ def handle_generate_plan():
         activity_level = data.get('activity_level', 'moderate')
         goal = data.get('goal', 'maintain')
         diet_preference = data.get('diet_preference', 'standard')
+        economic_diet = data.get('economic_diet', False)
+        
+        if economic_diet and diet_preference == 'standard':
+            diet_preference = 'economic'
         
         # 1. Calcular Necessidades Energéticas e Macronutrientes (inclui BMI)
         nutrition = calculate_nutrition(gender, weight, height, age, activity_level, goal)
@@ -968,10 +995,40 @@ def handle_generate_plan():
         }
         
         return jsonify(response_data), 200
-        
     except Exception as e:
         return jsonify({'error': str(e)}), 400
 
+@app.route('/api/admin/toggle-block', methods=['POST'])
+def toggle_block():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Faltam dados'}), 400
+        
+    admin_email = data.get('admin_email')
+    admin_password = data.get('admin_password')
+    target_email = data.get('target_email')
+    is_blocked = data.get('is_blocked')
+    
+    valid_admins = {
+        'silvaisaacx10@gmail.com': 'vidanova',
+        'joaoeduardodeassuncao@gmail.com': 'leticio'
+    }
+    
+    if admin_email not in valid_admins or valid_admins[admin_email] != admin_password:
+        return jsonify({'error': 'Não autorizado'}), 401
+        
+    if not target_email:
+        return jsonify({'error': 'E-mail do alvo não fornecido'}), 400
+        
+    admin_name = 'Isaac' if admin_email == 'silvaisaacx10@gmail.com' else 'João'
+    blocked_by_value = admin_name if is_blocked else None
+        
+    try:
+        supabase.table('vulcan_users').update({'is_blocked': is_blocked, 'blocked_by': blocked_by_value}).eq('email', target_email).execute()
+        return jsonify({'message': 'Status atualizado com sucesso'}), 200
+    except Exception as e:
+        print("Error toggling block:", e)
+        return jsonify({'error': 'Erro ao atualizar banco de dados'}), 500
 
 if __name__ == '__main__':
     # Roda localmente na porta 5000
